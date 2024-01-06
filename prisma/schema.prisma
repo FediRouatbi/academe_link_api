@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  user_id              Int              @id @default(autoincrement())
+  user_name            String           @unique()
+  force_reset_password Boolean          @default(false)
+  two_factor_auth      Boolean          @default(false)
+  password_hash        String?
+  first_name           String
+  last_name            String
+  email                email?
+  roles_on_users       roles_on_users[]
+  createdAt            DateTime         @default(now())
+  puat                 DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+}
+
+model role {
+  role_id        Int              @id @default(autoincrement())
+  name           String
+  role_code      RoleCodeEnum     @unique
+  roles_on_users roles_on_users[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model roles_on_users {
+  user      user                 @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id   Int
+  role      role                 @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  role_id   Int
+  status    RoleOnUserStatusEnum
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@id([user_id, role_id])
+}
+
+enum RoleCodeEnum {
+  CLIENT
+  ADMIN
+}
+
+enum RoleOnUserStatusEnum {
+  ACTIVE
+  BLOCKED
+}
+
+model email {
+  email_id     Int      @id @default(autoincrement())
+  email_value  String   @unique
+  is_validated Boolean  @default(false)
+  user         user?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id      Int?     @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

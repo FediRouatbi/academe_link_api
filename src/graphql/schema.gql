@@ -1,0 +1,162 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type SignedIn {
+  next_step: AuthNextStepEnum!
+  token: String
+  refresh_token: String
+  email: String
+}
+
+enum AuthNextStepEnum {
+  PASS
+  TWO_FACTOR_AUTH
+  EMAIL_VALIDATION
+  RESET_PASSWOD
+  RESET_PASSWOD_FINISH
+}
+
+type Role {
+  role_id: Int!
+  name: String!
+  role_code: RoleCodeEnum!
+}
+
+enum RoleCodeEnum {
+  CLIENT
+  ADMIN
+}
+
+type PageInfo {
+  isFirstPage: Boolean!
+  isLastPage: Boolean!
+  currentPage: Int!
+  previousPage: Int
+  nextPage: Int
+  pageCount: Int!
+  totalCount: Int!
+}
+
+type PaginatedRole {
+  data: [Role!]!
+  pageInfo: PageInfo!
+}
+
+type User {
+  user_id: Int!
+  user_name: String!
+  first_name: String!
+  last_name: String!
+  force_reset_password: Boolean!
+  two_factor_auth: Boolean!
+  roles(paginationInput: PaginationInput, roleFindOptionsInput: RoleFindOptionsInput): PaginatedRole!
+}
+
+input PaginationInput {
+  page: Int
+  limit: Int
+}
+
+input RoleFindOptionsInput {
+  searchOption: SearchRoleInput
+  sortOption: SortRoleInput
+  filterOption: FilterRoleInput
+}
+
+input SearchRoleInput {
+  value: String!
+  fields: [RoleSearchableFieldsEnum!]!
+}
+
+enum RoleSearchableFieldsEnum {
+  name
+  role_code
+}
+
+input SortRoleInput {
+  field: RoleSortableFieldsEnum!
+  order: SortOrderEnum!
+}
+
+enum RoleSortableFieldsEnum {
+  name
+  role_code
+}
+
+enum SortOrderEnum {
+  asc
+  desc
+}
+
+input FilterRoleInput {
+  name: String
+}
+
+type Query {
+  getMyProfile: User!
+}
+
+type Mutation {
+  signInEmail(signInEmailInput: SignInEmailInput!): SignedIn!
+  signInUserName(signInUserNameInput: SignInUserNameInput!): SignedIn!
+  validateOtp(otpValidationInput: OtpValidationInput!): SignedIn!
+  reSendOtp: SignedIn!
+  resetPassword(resetPasswordInput: ResetPasswordInput!): SignedIn!
+  updatePassword(updatePasswordInput: UpdatePasswordInput!): SignedIn!
+  forgotPasswordByEmail(forgotPasswordByEmailInput: ForgotPasswordByEmailInput!): SignedIn!
+  forgotPasswordByUserName(forgotPasswordByUserNameInput: ForgotPasswordByUserNameInput!): SignedIn!
+  refreshToken(refreshTokenInput: RefreshTokenInput!): SignedIn!
+  playerSignUp(playerSignUpInput: PlayerSignUpInput!): SignedIn!
+  deleteAccount(deleteAccountInput: DeleteAccountInput!): User!
+}
+
+input SignInEmailInput {
+  email: String!
+  password: String!
+}
+
+input SignInUserNameInput {
+  user_name: String!
+  password: String!
+}
+
+input OtpValidationInput {
+  otp: String!
+}
+
+input ResetPasswordInput {
+  password: String!
+  confirm_password: String!
+}
+
+input UpdatePasswordInput {
+  password: String!
+  confirm_password: String!
+  old_password: String!
+}
+
+input ForgotPasswordByEmailInput {
+  email: String!
+}
+
+input ForgotPasswordByUserNameInput {
+  user_name: String!
+}
+
+input RefreshTokenInput {
+  refresh_token: String!
+}
+
+input PlayerSignUpInput {
+  user_name: String!
+  first_name: String!
+  last_name: String!
+  email: String!
+  password: String!
+  confirm_password: String!
+}
+
+input DeleteAccountInput {
+  password: String!
+}

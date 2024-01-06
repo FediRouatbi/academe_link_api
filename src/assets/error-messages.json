@@ -1,0 +1,13 @@
+{
+  "400.714243": "Bad input!",
+  "401.977936": "Unauthorized!",
+  "401.483109": "Invalid token!",
+  "401.254774": "Expired token!",
+  "403.552582": "Forbidden resources!",
+  "404.833661": "User not found!",
+  "409.891519": "User name already used!",
+  "409.479023": "User email already used!",
+  "409.654214": "Password is the same!",
+  "429.209332": "Too Many Requests!",
+  "500.695375": "Unknow error!"
+}
