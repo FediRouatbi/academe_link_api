@@ -39,6 +39,7 @@ import { AppConfigService } from '@src/common/services/app-config.service';
       fieldResolverEnhancers: ['guards'],
       driver: MercuriusDriver,
       graphiql: false,
+
       ide: false,
       autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
       context: (request: FastifyRequest, reply: FastifyReply) => ({
