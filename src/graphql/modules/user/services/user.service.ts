@@ -56,7 +56,7 @@ export class UserService {
               status: RoleOnUserStatusEnum.ACTIVE,
               role: {
                 connect: {
-                  role_code: RoleCodeEnum.CLIENT,
+                  role_code: RoleCodeEnum.STUDENT,
                 },
               },
             },

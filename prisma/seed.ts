@@ -12,7 +12,7 @@ async function main() {
 
   const rolesData: { role_code: RoleCodeEnum; name: string }[] = [
     { role_code: RoleCodeEnum.ADMIN, name: 'Admin' },
-    { role_code: RoleCodeEnum.CLIENT, name: 'Client' },
+    { role_code: RoleCodeEnum.STUDENT, name: 'Client' },
   ];
 
   for (let i = 0; i < rolesData.length; i++) {

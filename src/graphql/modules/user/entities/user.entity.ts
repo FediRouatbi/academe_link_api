@@ -12,7 +12,7 @@ export class User {
   first_name: string;
 
   @Field(() => String)
-  last_name: String;
+  last_name: string;
 
   @Field(() => Boolean)
   force_reset_password: boolean;

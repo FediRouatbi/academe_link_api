@@ -6,7 +6,7 @@ import { GqlException } from '../utils/gql-exception.util';
 @Catch()
 export class GlobalExceptionFilter implements GqlExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);
-  catch(exception: HttpException | GqlException, host: ArgumentsHost) {
+  catch(exception: HttpException | GqlException) {
     if (exception instanceof GqlException) {
       return exception;
     } else {

@@ -21,7 +21,7 @@ export class SearchRoleInput {
     let search = {};
 
     const { fields, value } = this;
-    let searchKeys = value.split(' ').filter((word) => {
+    const searchKeys = value.split(' ').filter((word) => {
       if (word.trim()) return word;
     });
     search = {

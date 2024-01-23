@@ -20,6 +20,9 @@ model user {
   createdAt            DateTime         @default(now())
   puat                 DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
+
+  userClassrooms classroom[] 
+  Subject        subject[]
 }
 
 model role {
@@ -44,8 +47,9 @@ model roles_on_users {
 }
 
 enum RoleCodeEnum {
-  CLIENT
   ADMIN
+  TEACHER
+  STUDENT
 }
 
 enum RoleOnUserStatusEnum {
@@ -57,8 +61,29 @@ model email {
   email_id     Int      @id @default(autoincrement())
   email_value  String   @unique
   is_validated Boolean  @default(false)
-  user         user?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id      Int?     @unique
+  user         user     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id      Int      @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model classroom {
+  classroom_id Int @id @default(autoincrement())
+  classroom_name String
+
+  subject    subject[]
+  student    user[] 
+
+  createdAt  DateTime @default(now())
+  assignedBy String
+}
+
+model subject {
+  subject_id   Int    @id @default(autoincrement())
+  subject_name String
+
+  teacher    user? @relation(fields: [teacher_id], references: [user_id])
+  teacher_id Int
+
+  usersOnClassroom classroom[]
 }

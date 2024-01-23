@@ -1,24 +1,15 @@
 import { FastifyRequest } from 'fastify';
 
-
-
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-
-
 import { AuthService } from '../services/auth.service';
-
-
 
 import { GqlException } from '@src/common/utils/gql-exception.util';
 
-
-
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { SKIP_AUTH_KEY } from '../decorators/skip-auth.decorator';
-
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -55,6 +46,7 @@ export class AuthGuard implements CanActivate {
         token,
         acceptedRoles,
       );
+
       const args = GqlCtx.getArgs();
       args.user = user;
 

@@ -25,7 +25,8 @@ type Role {
 
 enum RoleCodeEnum {
   CLIENT
-  ADMIN
+  STUDENT
+  TEACHER
 }
 
 type PageInfo {

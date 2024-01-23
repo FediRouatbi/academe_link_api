@@ -23,6 +23,7 @@ import { UserModule } from './modules/user/user.module';
 import { GqlSharedModule } from './shared/gql-shared.module';
 
 import { AppConfigService } from '@src/common/services/app-config.service';
+import { \graphql\modules\adminModule } from './modules/admin/graphql/modules/admin.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { AppConfigService } from '@src/common/services/app-config.service';
     UserModule,
     RoleModule,
     GqlSharedModule,
+    \graphql\modules\adminModule,
   ],
   providers: [
     {

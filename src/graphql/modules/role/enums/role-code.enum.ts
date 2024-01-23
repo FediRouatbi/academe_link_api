@@ -2,10 +2,12 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export const RoleCodeEnum: {
   CLIENT: 'CLIENT';
-  ADMIN: 'ADMIN';
+  STUDENT: 'STUDENT';
+  TEACHER: 'TEACHER';
 } = {
   CLIENT: 'CLIENT',
-  ADMIN: 'ADMIN',
+  STUDENT: 'STUDENT',
+  TEACHER: 'TEACHER',
 };
 
 export type RoleCodeEnum = (typeof RoleCodeEnum)[keyof typeof RoleCodeEnum];
