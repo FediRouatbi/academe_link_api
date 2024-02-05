@@ -21,10 +21,49 @@ model user {
   puat                 DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
 
-  userClassrooms classroom[] 
-  Subject        subject[]
+  student           student?
+  teacher           teacher?
+
+}
+model student{
+student_id Int  @id @default(autoincrement()) 
+user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
+user_id Int   @unique
+
+classroom   classroom @relation(fields: [classroom_id],references: [classroom_id],onDelete: Cascade)     
+classroom_id  Int  
+
 }
 
+model teacher{
+teacher_id Int  @id @default(autoincrement()) 
+user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
+user_id Int   @unique
+classroom   classroom[]  
+subject     subject[]
+}
+model subject {
+  subject_id   Int    @id @default(autoincrement())
+  subject_name String
+
+  teacher    teacher? @relation(fields: [teacher_id], references: [user_id])
+  teacher_id Int
+
+  classroom classroom? @relation(fields: [classroom_id],references: [classroom_id],onDelete: Cascade)
+  classroom_id Int
+}
+
+
+model classroom {
+  classroom_id Int @id @default(autoincrement())
+  classroom_name String
+
+  subject    subject[]
+  student    student[]
+  teacher    teacher[]
+  createdAt  DateTime @default(now())
+  assignedBy String
+}
 model role {
   role_id        Int              @id @default(autoincrement())
   name           String
@@ -67,23 +106,4 @@ model email {
   updatedAt    DateTime @updatedAt
 }
 
-model classroom {
-  classroom_id Int @id @default(autoincrement())
-  classroom_name String
 
-  subject    subject[]
-  student    user[] 
-
-  createdAt  DateTime @default(now())
-  assignedBy String
-}
-
-model subject {
-  subject_id   Int    @id @default(autoincrement())
-  subject_name String
-
-  teacher    user? @relation(fields: [teacher_id], references: [user_id])
-  teacher_id Int
-
-  usersOnClassroom classroom[]
-}

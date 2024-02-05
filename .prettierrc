@@ -1,29 +1,4 @@
 {
-  "importOrder": [
-    "^@nestjs",
-    "^@prisma",
-    ".module",
-    ".controller",
-    ".resolver",
-    ".service",
-    ".guard",
-    ".filter",
-    ".util",
-    ".decorator",
-    ".entity",
-    ".input",
-    ".enum",
-    ".interface",
-    "^[./]"
-  ],
-  "plugins": ["@trivago/prettier-plugin-sort-imports"],
-  "importOrderParserPlugins": [
-    "typescript",
-    "classProperties",
-    "decorators-legacy"
-  ],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true,
   "singleQuote": true,
   "trailingComma": "all"
 }
