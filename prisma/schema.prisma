@@ -10,8 +10,6 @@ datasource db {
 model user {
   user_id              Int              @id @default(autoincrement())
   user_name            String           @unique()
-  force_reset_password Boolean          @default(false)
-  two_factor_auth      Boolean          @default(false)
   password_hash        String?
   first_name           String
   last_name            String
@@ -23,15 +21,14 @@ model user {
 
   student           student?
   teacher           teacher?
-
 }
 model student{
 student_id Int  @id @default(autoincrement()) 
 user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
 user_id Int   @unique
 
-classroom   classroom @relation(fields: [classroom_id],references: [classroom_id],onDelete: Cascade)     
-classroom_id  Int  
+classroom   classroom? @relation(fields: [classroom_id],references: [classroom_id])     
+classroom_id  Int?  
 
 }
 
@@ -39,9 +36,10 @@ model teacher{
 teacher_id Int  @id @default(autoincrement()) 
 user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
 user_id Int   @unique
-classroom   classroom[]  
+teacherClassroom   teacherClassroom? 
 subject     subject[]
 }
+
 model subject {
   subject_id   Int    @id @default(autoincrement())
   subject_name String
@@ -49,20 +47,31 @@ model subject {
   teacher    teacher? @relation(fields: [teacher_id], references: [user_id])
   teacher_id Int
 
-  classroom classroom? @relation(fields: [classroom_id],references: [classroom_id],onDelete: Cascade)
+  classroom classroom? @relation(fields: [classroom_id],references: [classroom_id])
   classroom_id Int
 }
 
 
 model classroom {
   classroom_id Int @id @default(autoincrement())
-  classroom_name String
+  classroom_name String @unique
 
   subject    subject[]
   student    student[]
-  teacher    teacher[]
+
+  teacherClassroom    teacherClassroom[]
+
   createdAt  DateTime @default(now())
-  assignedBy String
+}
+
+model teacherClassroom{
+classroom classroom @relation(fields: [classroom_id],references: [classroom_id])
+classroom_id Int  @unique
+
+teacher teacher @relation(fields: [teacher_id],references: [teacher_id])
+teacher_id Int  @unique
+
+@@id([classroom_id, teacher_id])
 }
 model role {
   role_id        Int              @id @default(autoincrement())

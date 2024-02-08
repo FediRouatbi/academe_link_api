@@ -9,18 +9,37 @@ type Teacher {
   last_name: String!
 }
 
+type User {
+  student_id: Float!
+  user_id: Float!
+  classroom_id: Float!
+}
+
+type Classroom {
+  classroom_id: String!
+  classroom_name: String!
+  createdAt: String!
+  student: [User!]!
+  teacher: [String!]!
+  subject: [String!]!
+}
+
 type Query {
   Hello: String!
+  getClassromms: [Classroom!]!
 }
 
 type Mutation {
-  TestEndPoint(createTeacher: CreateTeacher!): Teacher!
+  CreateUser(createUser: CreateUser!): Teacher!
+  EditUser(editUser: CreateUser!, id: Int!): Teacher!
+  creatClassroom(classroom: String!, teachersId: [Int!]!, studentsId: [Int!]!): Classroom!
+  deleteClassroom(classroomId: Float!): Classroom!
 }
 
-input CreateTeacher {
+input CreateUser {
   first_name: String!
   last_name: String!
   user_name: String!
-  email: String
+  email: String!
   password: String!
 }
