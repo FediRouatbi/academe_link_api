@@ -1,6 +1,7 @@
-import { User } from 'src/user/entities/create-user.entity';
-import { student } from './../../../node_modules/.prisma/client/index.d';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { User } from 'src/common/entities/user.entity';
+import { Student } from 'src/student/entities/create-student.entity';
+import { Teacher } from 'src/teacher/entities/get-teacher.entity';
 
 @ObjectType()
 export class Classroom {
@@ -13,11 +14,11 @@ export class Classroom {
   @Field(() => String)
   createdAt: string;
 
-  @Field(() => [User])
-  student: User[];
+  @Field(() => [Student])
+  student: Student[];
 
-  @Field(() => [String])
-  teacher: string[];
+  @Field(() => [Teacher])
+  teacher: Teacher[];
 
   @Field(() => [String])
   subject: string[];

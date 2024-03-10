@@ -1,3 +1,4 @@
+import { teacher } from './../../../node_modules/.prisma/client/index.d';
 import { Classroom } from './../entities/create-classroom.entity';
 import {
   ConflictException,
@@ -11,20 +12,53 @@ export class ClassroomService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getClassromms() {
-    return this.prismaService.classroom.findMany({
+    const query = await this.prismaService.classroom.findMany({
       include: {
-        student: true,
-        teacherClassroom: { select: { teacher: true } },
+        student: {
+          select: {
+            student_id: true,
+            user_id: true,
+            classroom_id: true,
+            user: {
+              select: {
+                user_name: true,
+                last_name: true,
+                first_name: true,
+                createdAt: true,
+                updatedAt: true,
+                user_id: true,
+              },
+            },
+          },
+        },
+        teacherClassroom: {
+          select: {
+            teacher: {
+              select: { user: true, teacher_id: true, user_id: true },
+            },
+          },
+        },
         subject: true,
       },
     });
+
+    const data = query.map((el) => {
+      const { teacherClassroom, ...rest } = el;
+
+      const teacher = teacherClassroom.map((el) => el.teacher);
+
+      console.log({ ...rest, teacher });
+
+      return { ...rest, teacher };
+    });
+
+    return data;
   }
 
   async findOne(classroom_id: number) {
     const existingClassroom = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
     });
-    console.log(existingClassroom);
 
     if (!existingClassroom) {
       throw new NotFoundException('Classroom not found');
@@ -32,8 +66,9 @@ export class ClassroomService {
 
     return existingClassroom;
   }
+
   async getClassromm(classroom_id: number) {
-    return this.prismaService.classroom.findUnique({
+    const query = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
       include: {
         student: true,
@@ -41,6 +76,9 @@ export class ClassroomService {
         subject: true,
       },
     });
+    const { teacherClassroom, ...rest } = query;
+    const teacher = teacherClassroom?.map((el) => el.teacher);
+    return { ...rest, teacher };
   }
 
   async creatClassroom(
@@ -59,10 +97,10 @@ export class ClassroomService {
     const listTeachersId = teachersId.map((el) => ({ teacher_id: el }));
     const listStudentsId = studentsId.map((el) => ({ student_id: el }));
 
-    return this.prismaService.classroom.create({
+    const data = await this.prismaService.classroom.create({
       data: {
         classroom_name,
-        teacherClassroom: { connect: listTeachersId },
+        teacherClassroom: { createMany: { data: listTeachersId } },
         student: { connect: listStudentsId },
         subject: { connect: [] },
       },
@@ -72,12 +110,43 @@ export class ClassroomService {
         subject: true,
       },
     });
+
+    const { teacherClassroom, ...res } = data;
+    const teacher = teacherClassroom.map((el) => el.teacher);
+    return { ...res, teacher };
   }
 
-  async editClassromm(classroom_id: number, classroom_name: string) {
+  async editClassromm(
+    classroom_id: number,
+    classroom_name: string,
+    deletedUsersIDs: number[] = [],
+    createdUSersIDs: number[] = [],
+    deletedTeachersIDs: number[] = [],
+    createdTeachersIDs: number[] = [],
+  ) {
+    await this.findOne(classroom_id);
+
+    const deletedUsers = deletedUsersIDs.map((el) => ({ student_id: el }));
+    const createdUsers = createdUSersIDs.map((el) => ({ student_id: el }));
+
+    const deletedTeachers = deletedTeachersIDs.map((el) => ({
+      teacher_id: el,
+    }));
+
+    const createdTeachers = createdTeachersIDs.map((el) => ({
+      teacher_id: el,
+    }));
+
     return this.prismaService.classroom.update({
       where: { classroom_id },
-      data: { classroom_name },
+      data: {
+        classroom_name,
+        student: { deleteMany: deletedUsers, connect: createdUsers },
+        teacherClassroom: {
+          deleteMany: deletedTeachers,
+          createMany: { data: createdTeachers },
+        },
+      },
     });
   }
 

@@ -31,12 +31,9 @@ export class ClassroomResolver {
     );
   }
 
-  //   async editClassromm(classroom_id: number, classroom_name: string) {
-  //     return this.prismaService.classroom.update({
-  //       where: { classroom_id },
-  //       data: { classroom_name },
-  //     });
-  //   }
+  async editClassromm(classroom_id: number, classroom_name: string) {
+    return this.classroomService?.editClassromm(classroom_id, classroom_name);
+  }
   @Mutation(() => Classroom)
   async deleteClassroom(@Args('classroomId') classroomId: number) {
     return this.classroomService.deleteClassroom(classroomId);

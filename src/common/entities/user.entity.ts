@@ -1,7 +1,8 @@
+import { Optional } from '@nestjs/common';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class Teacher {
+export class User {
   @Field(() => Int)
   user_id: number;
 
@@ -13,4 +14,10 @@ export class Teacher {
 
   @Field(() => String)
   last_name: string;
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
 }

@@ -5,9 +5,10 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
-import { AdminModule } from './admin/admin.module';
 import { CommonModule } from './common/common.module';
 import { ClassroomModule } from './classroom/classroom.module';
+import { TeacherModule } from './teacher/teacher.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -18,8 +19,9 @@ import { ClassroomModule } from './classroom/classroom.module';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     CommonModule,
-    AdminModule,
     ClassroomModule,
+    TeacherModule,
+    StudentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

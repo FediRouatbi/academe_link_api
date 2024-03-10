@@ -36,7 +36,7 @@ model teacher{
 teacher_id Int  @id @default(autoincrement()) 
 user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
 user_id Int   @unique
-teacherClassroom   teacherClassroom? 
+teacherClassroom   teacherClassroom[] 
 subject     subject[]
 }
 
@@ -59,17 +59,17 @@ model classroom {
   subject    subject[]
   student    student[]
 
-  teacherClassroom    teacherClassroom[]
+  teacherClassroom    teacherClassroom[]  
 
   createdAt  DateTime @default(now())
 }
 
 model teacherClassroom{
 classroom classroom @relation(fields: [classroom_id],references: [classroom_id])
-classroom_id Int  @unique
+classroom_id Int  
 
-teacher teacher @relation(fields: [teacher_id],references: [teacher_id])
-teacher_id Int  @unique
+teacher teacher @relation(fields: [teacher_id],references: [teacher_id], onDelete: Cascade)
+teacher_id Int  
 
 @@id([classroom_id, teacher_id])
 }
