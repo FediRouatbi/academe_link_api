@@ -10,8 +10,6 @@ datasource db {
 model user {
   user_id              Int              @id @default(autoincrement())
   user_name            String           @unique()
-  force_reset_password Boolean          @default(false)
-  two_factor_auth      Boolean          @default(false)
   password_hash        String?
   first_name           String
   last_name            String
@@ -20,8 +18,61 @@ model user {
   createdAt            DateTime         @default(now())
   puat                 DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
+
+  student           student?
+  teacher           teacher?
+}
+model student{
+student_id Int  @id @default(autoincrement()) 
+user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
+user_id Int   @unique
+
+classroom   classroom? @relation(fields: [classroom_id],references: [classroom_id])     
+classroom_id  Int?  
+
 }
 
+model teacher{
+teacher_id Int  @id @default(autoincrement()) 
+user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
+user_id Int   @unique
+teacherClassroom   teacherClassroom[] 
+subject     subject[]
+}
+
+model subject {
+  subject_id   Int    @id @default(autoincrement())
+  subject_name String
+
+  teacher    teacher? @relation(fields: [teacher_id], references: [user_id])
+  teacher_id Int
+
+  classroom classroom? @relation(fields: [classroom_id],references: [classroom_id])
+  classroom_id Int
+}
+
+
+model classroom {
+  classroom_id Int @id @default(autoincrement())
+  classroom_name String @unique
+
+  subject    subject[]
+  student    student[]
+
+  teacherClassroom    teacherClassroom[]  
+
+  createdAt  DateTime @default(now())
+}
+
+model teacherClassroom{
+classroom classroom @relation(fields: [classroom_id],references: [classroom_id])
+classroom_id Int  
+
+teacher teacher @relation(fields: [teacher_id],references: [teacher_id], onDelete: Cascade)
+teacher_id Int  
+
+@@id([classroom_id, teacher_id])
+}
 model role {
   role_id        Int              @id @default(autoincrement())
   name           String
@@ -44,8 +95,9 @@ model roles_on_users {
 }
 
 enum RoleCodeEnum {
-  CLIENT
   ADMIN
+  TEACHER
+  STUDENT
 }
 
 enum RoleOnUserStatusEnum {
@@ -57,8 +109,10 @@ model email {
   email_id     Int      @id @default(autoincrement())
   email_value  String   @unique
   is_validated Boolean  @default(false)
-  user         user?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id      Int?     @unique
+  user         user     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id      Int      @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+

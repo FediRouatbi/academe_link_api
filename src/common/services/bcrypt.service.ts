@@ -2,15 +2,10 @@ import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 
-import { AppConfigService } from './app-config.service';
-
 @Injectable()
 export class BcryptService {
-  constructor(private appConfigService: AppConfigService) {}
-
   async hash(value: string): Promise<string> {
-    const rounds = this.appConfigService.authConfig.hash.rounds;
-    const hash = await bcrypt.hash(value, rounds);
+    const hash = await bcrypt.hash(value, 16);
     return hash;
   }
 
