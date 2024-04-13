@@ -16,16 +16,20 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type ClassroomTest {
+  classroom_id: Float!
+  classroom_name: String!
+  createdAt: DateTime!
+}
+
 type Student {
   student_id: Float!
-  user_id: Float!
-  classroom_id: Float!
+  classroom: ClassroomTest
   user: User!
 }
 
 type Teacher {
   teacher_id: Int!
-  user_id: Int!
   user: User!
 }
 
@@ -33,24 +37,37 @@ type Classroom {
   classroom_id: String!
   classroom_name: String!
   createdAt: String!
-  student: [Student!]!
-  teacher: [Teacher!]!
-  subject: [String!]!
+  student: [Student!]
+  teacher: [Teacher!]
+  subject: [String!]
 }
 
 type Query {
   getClassromms: [Classroom!]!
+  getClassromm(id: Int!): Classroom!
   GetTeachers: [Teacher!]!
+  GetTeacher(id: Int!): Teacher!
   GetStudents: [Student!]!
+  getStudent(id: Int!): Student!
 }
 
 type Mutation {
-  creatClassroom(classroom: String!, teachersId: [Int!]!, studentsId: [Int!]!): Classroom!
+  creatClassroom(classroom: String!, teachersId: [Int!]! = [], studentsId: [Int!]! = []): Classroom!
+  editClassromm(editTeacher: UpdateClassroom!, id: Int!): Classroom!
   deleteClassroom(classroomId: Float!): Classroom!
   CreateTeacher(createTeacher: CreateTeacher!): Teacher!
   EditTeacher(editTeacher: UpdateTeacher!, id: Int!): Teacher!
   deleteTeacher(teacherId: Float!): Teacher!
   CreateStudent(createStudent: CreateStudent!): Student!
+  EditStudent(editStudent: UpdateStudent!, id: Int!): Student!
+  deleteStudent(teacherId: Float!): Student!
+}
+
+input UpdateClassroom {
+  classroom_name: String
+  subjects: [String!] = []
+  students: [String!] = []
+  teachers: [String!] = []
 }
 
 input CreateTeacher {
@@ -75,4 +92,14 @@ input CreateStudent {
   user_name: String!
   email: String!
   password: String!
+  classroom_id: Float
+}
+
+input UpdateStudent {
+  first_name: String
+  last_name: String
+  user_name: String
+  email: String
+  password: String
+  classroom_id: Float
 }

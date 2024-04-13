@@ -1,3 +1,4 @@
+import { UpdateClassroom } from '../dto/update-classroom.input';
 import { teacher } from './../../../node_modules/.prisma/client/index.d';
 import { Classroom } from './../entities/create-classroom.entity';
 import {
@@ -47,8 +48,6 @@ export class ClassroomService {
 
       const teacher = teacherClassroom.map((el) => el.teacher);
 
-      console.log({ ...rest, teacher });
-
       return { ...rest, teacher };
     });
 
@@ -58,6 +57,17 @@ export class ClassroomService {
   async findOne(classroom_id: number) {
     const existingClassroom = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
+      include: {
+        student: true,
+        subject: true,
+        teacherClassroom: {
+          select: {
+            teacher: {
+              select: { user: true, teacher_id: true, user_id: true },
+            },
+          },
+        },
+      },
     });
 
     if (!existingClassroom) {
@@ -77,6 +87,7 @@ export class ClassroomService {
       },
     });
     const { teacherClassroom, ...rest } = query;
+
     const teacher = teacherClassroom?.map((el) => el.teacher);
     return { ...rest, teacher };
   }
@@ -110,41 +121,44 @@ export class ClassroomService {
         subject: true,
       },
     });
-
     const { teacherClassroom, ...res } = data;
     const teacher = teacherClassroom.map((el) => el.teacher);
     return { ...res, teacher };
   }
 
-  async editClassromm(
-    classroom_id: number,
-    classroom_name: string,
-    deletedUsersIDs: number[] = [],
-    createdUSersIDs: number[] = [],
-    deletedTeachersIDs: number[] = [],
-    createdTeachersIDs: number[] = [],
-  ) {
+  async editClassromm(classroom: UpdateClassroom, classroom_id: number) {
     await this.findOne(classroom_id);
 
-    const deletedUsers = deletedUsersIDs.map((el) => ({ student_id: el }));
-    const createdUsers = createdUSersIDs.map((el) => ({ student_id: el }));
-
-    const deletedTeachers = deletedTeachersIDs.map((el) => ({
-      teacher_id: el,
+    const listTeachersId = classroom?.teachers?.map((el) => ({
+      teacher_id: +el,
     }));
-
-    const createdTeachers = createdTeachersIDs.map((el) => ({
-      teacher_id: el,
+    const listStudentsId = classroom?.students?.map((el) => ({
+      student_id: +el,
     }));
 
     return this.prismaService.classroom.update({
       where: { classroom_id },
       data: {
-        classroom_name,
-        student: { deleteMany: deletedUsers, connect: createdUsers },
+        classroom_name: classroom?.classroom_name,
+        student: { set: listStudentsId },
         teacherClassroom: {
-          deleteMany: deletedTeachers,
-          createMany: { data: createdTeachers },
+          createMany: { data: listTeachersId },
+        },
+      },
+      select: {
+        student: { include: { user: true } },
+        classroom_name: true,
+        classroom_id: true,
+        teacherClassroom: {
+          select: {
+            teacher: {
+              select: {
+                subject: true,
+                user: true,
+                teacher_id: true,
+              },
+            },
+          },
         },
       },
     });

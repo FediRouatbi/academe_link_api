@@ -1,6 +1,7 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ClassroomService } from '../services/classroom.service';
 import { Classroom } from '../entities/create-classroom.entity';
+import { UpdateClassroom } from '../dto/update-classroom.input';
 
 @Resolver()
 export class ClassroomResolver {
@@ -11,18 +12,20 @@ export class ClassroomResolver {
     return this.classroomService.getClassromms();
   }
 
-  //   @Query(() => String)
-  //   async getClassromm(classroom_id: number) {
-  //     return this.prismaService.classroom.findUnique({
-  //       where: { classroom_id },
-  //       include: { student: true, teacher: true, subject: true },
-  //     });
-  //   }
+  @Query(() => Classroom)
+  async getClassromm(
+    @Args({ name: 'id', type: () => Int }) classroom_id: number,
+  ) {
+    return this.classroomService.getClassromm(classroom_id);
+  }
+
   @Mutation(() => Classroom)
   async creatClassroom(
     @Args('classroom') classroom_name: string,
-    @Args('teachersId', { type: () => [Int] }) teachersId: number[],
-    @Args('studentsId', { type: () => [Int] }) studentsId: number[],
+    @Args('teachersId', { type: () => [Int], defaultValue: [] })
+    teachersId?: number[],
+    @Args('studentsId', { type: () => [Int], defaultValue: [] })
+    studentsId?: number[],
   ) {
     return this.classroomService.creatClassroom(
       classroom_name,
@@ -30,10 +33,18 @@ export class ClassroomResolver {
       studentsId,
     );
   }
+  @Mutation(() => Classroom)
+  async editClassromm(
+    @Args('editTeacher') classroom: UpdateClassroom,
+    @Args({ name: 'id', type: () => Int }) classroom_id: number,
+  ) {
+    console.log(
+      await this.classroomService?.editClassromm(classroom, classroom_id),
+    );
 
-  async editClassromm(classroom_id: number, classroom_name: string) {
-    return this.classroomService?.editClassromm(classroom_id, classroom_name);
+    return this.classroomService?.editClassromm(classroom, classroom_id);
   }
+
   @Mutation(() => Classroom)
   async deleteClassroom(@Args('classroomId') classroomId: number) {
     return this.classroomService.deleteClassroom(classroomId);

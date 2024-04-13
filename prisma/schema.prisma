@@ -10,10 +10,10 @@ datasource db {
 model user {
   user_id              Int              @id @default(autoincrement())
   user_name            String           @unique()
+  email                String           @unique()
   password_hash        String?
   first_name           String
   last_name            String
-  email                email?
   roles_on_users       roles_on_users[]
   createdAt            DateTime         @default(now())
   puat                 DateTime         @default(now())
@@ -24,6 +24,7 @@ model user {
 }
 model student{
 student_id Int  @id @default(autoincrement()) 
+
 user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
 user_id Int   @unique
 
@@ -105,14 +106,5 @@ enum RoleOnUserStatusEnum {
   BLOCKED
 }
 
-model email {
-  email_id     Int      @id @default(autoincrement())
-  email_value  String   @unique
-  is_validated Boolean  @default(false)
-  user         user     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id      Int      @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
 
 

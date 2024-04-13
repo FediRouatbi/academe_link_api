@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/common/entities/user.entity';
 import { Student } from 'src/student/entities/create-student.entity';
 import { Teacher } from 'src/teacher/entities/get-teacher.entity';
@@ -14,12 +14,21 @@ export class Classroom {
   @Field(() => String)
   createdAt: string;
 
-  @Field(() => [Student])
+  @Field(() => [Student], { nullable: true })
   student: Student[];
 
-  @Field(() => [Teacher])
-  teacher: Teacher[];
+  @Field(() => [Teacher], {
+    nullable: true,
+    name: 'teacher',
+    middleware: [
+      async (c, next) => {
+        const value = await next();
+        return value?.map((el) => el.teacher);
+      },
+    ],
+  })
+  teacherClassroom: Teacher[];
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: true })
   subject: string[];
 }

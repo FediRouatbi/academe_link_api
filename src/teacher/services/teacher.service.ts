@@ -34,8 +34,16 @@ export class TeacherService {
     });
   }
 
+  async getTeacher(student_id: number) {
+    return this.findOne(student_id);
+  }
+
   async createTeacher(teacher: CreateTeacher): Promise<Teacher> {
     await this?.isTeachernameExists(teacher?.user_name, teacher?.email);
+
+    //3.5s estimated time to hash
+    const password_hash = await this.bcryptService.hash(teacher.password);
+
     return this.prismaService.teacher.create({
       data: {
         user: {
@@ -43,8 +51,8 @@ export class TeacherService {
             first_name: teacher.first_name,
             last_name: teacher.last_name,
             user_name: teacher.user_name,
-            email: { create: { email_value: teacher?.email } },
-            password_hash: await this.bcryptService.hash(teacher.password),
+            email: teacher?.email,
+            password_hash: password_hash,
             roles_on_users: {
               create: [
                 {
@@ -76,11 +84,16 @@ export class TeacherService {
             first_name: teacher?.first_name,
             last_name: teacher?.last_name,
             user_name: teacher?.user_name,
-            email: { update: { email_value: teacher?.email } },
+            email: teacher?.email,
           },
         },
       },
-      select: { user: true, user_id: true, teacher_id: true },
+      select: {
+        user: true,
+        user_id: true,
+        teacher_id: true,
+        teacherClassroom: { select: { classroom: true } },
+      },
     });
   }
 
@@ -89,12 +102,12 @@ export class TeacherService {
     email: string,
     id?: number,
   ): Promise<boolean> {
-    if (id) await this.isTeacherByIdExists(id);
+    if (id) await this.findOne(id);
 
     const isUsernameExists = !!(await this.prismaService.teacher.findFirst({
       where: {
         ...(id && { teacher_id: { not: id } }),
-        user: { OR: [{ user_name }, { email: { email_value: email } }] },
+        user: { user_name, email },
       },
     }));
 
@@ -102,19 +115,21 @@ export class TeacherService {
       throw new ConflictException('Name or email  already exist');
     return true;
   }
-  async isTeacherByIdExists(id: number): Promise<boolean> {
-    const user = await this.prismaService.teacher.findUnique({
-      where: {
-        teacher_id: id,
-      },
+
+  async findOne(teacher_id: number) {
+    const existingClassroom = await this.prismaService.teacher.findUnique({
+      where: { teacher_id },
+      include: { user: true },
     });
 
-    if (!user) throw new NotFoundException('Teacher do not exist!');
-    return true;
-  }
+    if (!existingClassroom) {
+      throw new NotFoundException('Teacher not found');
+    }
 
+    return existingClassroom;
+  }
   async deleteTeacher(teacher_id: number) {
-    await this.isTeacherByIdExists(teacher_id);
+    await this.findOne(teacher_id);
 
     return this.prismaService.teacher.delete({
       where: { teacher_id },

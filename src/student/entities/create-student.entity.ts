@@ -1,7 +1,5 @@
-import { Optional } from '@nestjs/common';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/common/entities/user.entity';
-
 @ObjectType()
 class ClassroomTest {
   @Field(() => Number)
@@ -19,15 +17,8 @@ export class Student {
   @Field(() => Number)
   student_id: number;
 
-  @Field(() => Number)
-  user_id: number;
-
-  @Field(() => Number)
-  classroom_id: number;
-
-  // @Field(() => ClassroomTest)
-  // @Optional()
-  // classroom: ClassroomTest;
+  @Field(() => ClassroomTest, { nullable: true })
+  classroom: ClassroomTest;
 
   @Field(() => User)
   user: User;
