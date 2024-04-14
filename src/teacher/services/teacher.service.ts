@@ -54,16 +54,14 @@ export class TeacherService {
             email: teacher?.email,
             password_hash: password_hash,
             roles_on_users: {
-              create: [
-                {
-                  status: RoleOnUserStatusEnum.ACTIVE,
-                  role: {
-                    connect: {
-                      role_code: RoleCodeEnum.TEACHER,
-                    },
+              create: {
+                status: RoleOnUserStatusEnum.ACTIVE,
+                role: {
+                  connect: {
+                    role_code: RoleCodeEnum.TEACHER,
                   },
                 },
-              ],
+              },
             },
           },
         },

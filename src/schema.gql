@@ -42,6 +42,43 @@ type Classroom {
   subject: [String!]
 }
 
+type Token {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+"""
+A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction.
+"""
+scalar JWT
+
+type Auth {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+type CurrentUser {
+  user_id: Int!
+  user_name: String!
+  first_name: String!
+  last_name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: RoleCodeEnum!
+}
+
+enum RoleCodeEnum {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
 type Query {
   getClassromms: [Classroom!]!
   getClassromm(id: Int!): Classroom!
@@ -49,6 +86,7 @@ type Query {
   GetTeacher(id: Int!): Teacher!
   GetStudents: [Student!]!
   getStudent(id: Int!): Student!
+  getCurrentUser: CurrentUser!
 }
 
 type Mutation {
@@ -61,6 +99,9 @@ type Mutation {
   CreateStudent(createStudent: CreateStudent!): Student!
   EditStudent(editStudent: UpdateStudent!, id: Int!): Student!
   deleteStudent(teacherId: Float!): Student!
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  refreshToken(token: JWT!): Token!
 }
 
 input UpdateClassroom {
@@ -102,4 +143,17 @@ input UpdateStudent {
   email: String
   password: String
   classroom_id: Float
+}
+
+input SignupInput {
+  email: String!
+  user_name: String!
+  first_name: String!
+  last_name: String!
+  role: RoleCodeEnum!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }

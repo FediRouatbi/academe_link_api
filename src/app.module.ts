@@ -9,9 +9,14 @@ import { CommonModule } from './common/common.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { StudentModule } from './student/student.module';
+import { AuthResolver } from './auth/resolvers/auth.resolver';
+import { AuthService } from './auth/services/auth.service';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: false,
@@ -22,6 +27,7 @@ import { StudentModule } from './student/student.module';
     ClassroomModule,
     TeacherModule,
     StudentModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
