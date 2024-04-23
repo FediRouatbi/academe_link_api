@@ -3,17 +3,14 @@ import { ClassroomService } from '../services/classroom.service';
 import { Classroom } from '../entities/create-classroom.entity';
 import { UpdateClassroom } from '../dto/update-classroom.input';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard, UserEntity } from 'src/auth/gql-auth.guard';
-import { User } from 'src/common/entities/user.entity';
+import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
 
 @Resolver()
 export class ClassroomResolver {
   constructor(private readonly classroomService: ClassroomService) {}
   @UseGuards(GqlAuthGuard)
   @Query(() => [Classroom])
-  async getClassromms(@UserEntity() user: User) {
-    console.log(user);
-
+  async getClassromms() {
     return this.classroomService.getClassromms();
   }
 
@@ -40,13 +37,9 @@ export class ClassroomResolver {
   }
   @Mutation(() => Classroom)
   async editClassromm(
-    @Args('editTeacher') classroom: UpdateClassroom,
+    @Args('editClassromm') classroom: UpdateClassroom,
     @Args({ name: 'id', type: () => Int }) classroom_id: number,
   ) {
-    console.log(
-      await this.classroomService?.editClassromm(classroom, classroom_id),
-    );
-
     return this.classroomService?.editClassromm(classroom, classroom_id);
   }
 

@@ -31,12 +31,11 @@ export class UserResolver {
     @Args('editStudent') student: UpdateStudent,
     @Args({ name: 'id', type: () => Int }) id: number,
   ): Promise<Student> {
-
     return this.studentService.editStudent(student, id);
   }
 
   @Mutation(() => Student)
-  async deleteStudent(@Args('teacherId') student_id: number) {
+  async deleteStudent(@Args('studentId') student_id: number) {
     return this.studentService.deleteStudent(student_id);
   }
 }

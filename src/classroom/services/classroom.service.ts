@@ -1,12 +1,10 @@
+import { PrismaService } from 'src/common/services/prisma.service';
 import { UpdateClassroom } from '../dto/update-classroom.input';
-import { teacher } from './../../../node_modules/.prisma/client/index.d';
-import { Classroom } from './../entities/create-classroom.entity';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/common/services/prisma.service';
 
 @Injectable()
 export class ClassroomService {

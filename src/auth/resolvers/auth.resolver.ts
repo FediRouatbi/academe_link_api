@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  Mutation,
-  Args,
-  Parent,
-  ResolveField,
-  Query,
-} from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
 import { AuthService } from '../services/auth.service';
 import { Auth } from '../models/auth.model';
 import { Token } from '../models/token.model';
@@ -15,6 +8,7 @@ import { RefreshTokenInput } from '../dto/refresh-token.input';
 import { GqlAuthGuard, UserEntity } from '../gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../dto/user.input';
+import { Response, Request } from 'express';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -37,11 +31,22 @@ export class AuthResolver {
   }
 
   @Mutation(() => Auth)
-  async login(@Args('data') { email, password }: LoginInput) {
+  async login(
+    @Args('data') { email, password }: LoginInput,
+    @Context('res') res: Response,
+  ) {
     const { accessToken, refreshToken } = await this.auth.login(
       email.toLowerCase(),
       password,
     );
+
+    res?.cookie('jwt', accessToken, {
+      expires: new Date(Date.now() + 10 * 100000),
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 800000000000,
+    });
 
     return {
       accessToken,

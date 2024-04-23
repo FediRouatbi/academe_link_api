@@ -22,9 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.validateUser(payload?.user_id);
     const { roles_on_users, ...rest } = user;
     const role = user?.roles_on_users?.[0]?.role?.role_code as RoleCodeEnum;
-    console.log(user?.roles_on_users?.[0]);
-      console.log(payload);
-      
     if (!user) {
       throw new UnauthorizedException();
     }

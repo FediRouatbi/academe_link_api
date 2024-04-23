@@ -5,6 +5,7 @@
 type User {
   user_id: Int!
   user_name: String!
+  email: String!
   first_name: String!
   last_name: String!
   createdAt: DateTime!
@@ -79,6 +80,10 @@ enum RoleCodeEnum {
   STUDENT
 }
 
+type Topic {
+  content: String!
+}
+
 type Query {
   getClassromms: [Classroom!]!
   getClassromm(id: Int!): Classroom!
@@ -87,21 +92,26 @@ type Query {
   GetStudents: [Student!]!
   getStudent(id: Int!): Student!
   getCurrentUser: CurrentUser!
+  GetTopics: [Topic!]!
+  getTopicsByAuthor: [Topic!]!
 }
 
 type Mutation {
   creatClassroom(classroom: String!, teachersId: [Int!]! = [], studentsId: [Int!]! = []): Classroom!
-  editClassromm(editTeacher: UpdateClassroom!, id: Int!): Classroom!
+  editClassromm(editClassromm: UpdateClassroom!, id: Int!): Classroom!
   deleteClassroom(classroomId: Float!): Classroom!
   CreateTeacher(createTeacher: CreateTeacher!): Teacher!
   EditTeacher(editTeacher: UpdateTeacher!, id: Int!): Teacher!
   deleteTeacher(teacherId: Float!): Teacher!
   CreateStudent(createStudent: CreateStudent!): Student!
   EditStudent(editStudent: UpdateStudent!, id: Int!): Student!
-  deleteStudent(teacherId: Float!): Student!
+  deleteStudent(studentId: Float!): Student!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
+  CreateTopic(createTopic: CreateTopic!): Topic!
+  EditTopic(editTopic: UpdateTopic!, topicId: Int!): Topic!
+  deleteTopic(topicId: Float!): Topic!
 }
 
 input UpdateClassroom {
@@ -156,4 +166,12 @@ input SignupInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input CreateTopic {
+  content: String!
+}
+
+input UpdateTopic {
+  content: String
 }

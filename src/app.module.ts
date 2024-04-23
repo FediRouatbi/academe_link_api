@@ -9,25 +9,33 @@ import { CommonModule } from './common/common.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { StudentModule } from './student/student.module';
-import { AuthResolver } from './auth/resolvers/auth.resolver';
-import { AuthService } from './auth/services/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { TopicModule } from './topic/topic.module';
 
 @Module({
   imports: [
     ConfigModule,
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRoot({
+      context: ({ req, res }) => ({ req, res }),
+      cors: {
+        origin: true,
+        credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      },
       driver: ApolloDriver,
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      plugins: [
+        ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
+      ],
     }),
     CommonModule,
     ClassroomModule,
     TeacherModule,
     StudentModule,
     AuthModule,
+    TopicModule,
   ],
   controllers: [AppController],
   providers: [AppService],

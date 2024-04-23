@@ -27,6 +27,7 @@ export class TeacherService {
             createdAt: true,
             updatedAt: true,
             user_id: true,
+            email: true,
           },
         },
         subject: true,
