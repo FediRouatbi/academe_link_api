@@ -34,13 +34,27 @@ type Teacher {
   user: User!
 }
 
+type Subject {
+  """Example field (placeholder)"""
+  id: Int!
+
+  """Example field (placeholder)"""
+  name: String!
+}
+
+type Course {
+  classroom: Classroom!
+  teacher: Teacher!
+  subject: Subject!
+}
+
 type Classroom {
   classroom_id: String!
   classroom_name: String!
   createdAt: String!
   student: [Student!]
   teacher: [Teacher!]
-  subject: [String!]
+  course: [Course!]
 }
 
 type Token {
@@ -85,8 +99,8 @@ type Topic {
 }
 
 type Query {
-  getClassromms: [Classroom!]!
-  getClassromm(id: Int!): Classroom!
+  getClassrooms: [Classroom!]!
+  getClassroom(id: Int!): Classroom!
   GetTeachers: [Teacher!]!
   GetTeacher(id: Int!): Teacher!
   GetStudents: [Student!]!
@@ -94,6 +108,10 @@ type Query {
   getCurrentUser: CurrentUser!
   GetTopics: [Topic!]!
   getTopicsByAuthor: [Topic!]!
+  getSubjects: [Subject!]!
+  getSubject(id: Int!): Subject!
+  getCourses: [Course!]!
+  getCourse(id: Int!): Course!
 }
 
 type Mutation {
@@ -112,6 +130,12 @@ type Mutation {
   CreateTopic(createTopic: CreateTopic!): Topic!
   EditTopic(editTopic: UpdateTopic!, topicId: Int!): Topic!
   deleteTopic(topicId: Float!): Topic!
+  createSubject(createSubject: CreateSubjectInput!): Subject!
+  editSubject(id: Int!, editSubject: UpdateSubjectInput!): Subject!
+  deleteSubject(id: Int!): Subject!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  editCourse(updateCourseInput: UpdateCourseInput!): Course!
+  deleteCourse(id: Int!): Course!
 }
 
 input UpdateClassroom {
@@ -174,4 +198,37 @@ input CreateTopic {
 
 input UpdateTopic {
   content: String
+}
+
+input CreateSubjectInput {
+  """Example field (placeholder)"""
+  name: String!
+}
+
+input UpdateSubjectInput {
+  """Example field (placeholder)"""
+  name: String
+}
+
+input CreateCourseInput {
+  """Example field (placeholder)"""
+  subject_id: Int!
+
+  """Example field (placeholder)"""
+  teacher_id: Int!
+
+  """Example field (placeholder)"""
+  classroom_id: Int!
+}
+
+input UpdateCourseInput {
+  """Example field (placeholder)"""
+  subject_id: Int
+
+  """Example field (placeholder)"""
+  teacher_id: Int
+
+  """Example field (placeholder)"""
+  classroom_id: Int
+  id: Int!
 }

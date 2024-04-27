@@ -14,10 +14,8 @@ export class CreateTeacher {
   user_name: string;
 
   @Field(() => String)
-  email?: string;
+  email: string;
 
   @Field(() => String)
   password: string;
-
-  
 }

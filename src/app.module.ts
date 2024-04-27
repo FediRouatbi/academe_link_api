@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloDriver } from '@nestjs/apollo';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { CommonModule } from './common/common.module';
@@ -12,6 +12,8 @@ import { StudentModule } from './student/student.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TopicModule } from './topic/topic.module';
+import { SubjectModule } from './subject/subject.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { TopicModule } from './topic/topic.module';
     StudentModule,
     AuthModule,
     TopicModule,
+    SubjectModule,
+    CourseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

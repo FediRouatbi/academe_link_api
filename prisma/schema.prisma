@@ -38,26 +38,40 @@ model teacher {
   user             user               @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id          Int                @unique
   teacherClassroom teacherClassroom[]
-  subject          subject[]
+  course          course[]
 }
 
-model subject {
-  subject_id   Int    @id @default(autoincrement())
-  subject_name String
+model course {
+  id Int @id @default(autoincrement())
 
-  teacher    teacher? @relation(fields: [teacher_id], references: [user_id])
-  teacher_id Int
+  subject    subject @relation(fields: [subject_id], references: [id])
+  subject_id Int
+
+  teacher         teacher?     @relation(fields: [teacher_id], references: [teacher_id])
+  teacher_id      Int
 
   classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
   classroom_id Int
+
   topic        topic[]
+
+  @@unique([subject_id, teacher_id, classroom_id])
+
 }
+
+model subject {
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  course   course[]
+}
+
+
 
 model classroom {
   classroom_id   Int    @id @default(autoincrement())
   classroom_name String @unique
 
-  subject subject[]
+  course course[]
   student student[]
 
   teacherClassroom teacherClassroom[]
@@ -76,16 +90,17 @@ model teacherClassroom {
 }
 
 model topic {
-  topic_id Int  @id @default(autoincrement())
-  
+  topic_id Int @id @default(autoincrement())
+
   content String
 
-  user     user @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id  Int
+  user    user @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int
 
   classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
   classroom_id Int?
-  subject      subject?   @relation(fields: [subject_id], references: [subject_id])
+
+  subject      course?   @relation(fields: [subject_id], references: [id])
   subject_id   Int?
 }
 

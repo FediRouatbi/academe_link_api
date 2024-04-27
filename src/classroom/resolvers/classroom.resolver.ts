@@ -10,15 +10,15 @@ export class ClassroomResolver {
   constructor(private readonly classroomService: ClassroomService) {}
   @UseGuards(GqlAuthGuard)
   @Query(() => [Classroom])
-  async getClassromms() {
-    return this.classroomService.getClassromms();
+  async getClassrooms() {
+    return this.classroomService.getClassrooms();
   }
 
   @Query(() => Classroom)
-  async getClassromm(
+  async getClassroom(
     @Args({ name: 'id', type: () => Int }) classroom_id: number,
   ) {
-    return this.classroomService.getClassromm(classroom_id);
+    return this.classroomService.getClassroom(classroom_id);
   }
 
   @Mutation(() => Classroom)

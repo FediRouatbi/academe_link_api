@@ -10,8 +10,11 @@ import {
 export class ClassroomService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getClassromms() {
+  async getClassrooms() {
     const query = await this.prismaService.classroom.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         student: {
           select: {
@@ -37,7 +40,7 @@ export class ClassroomService {
             },
           },
         },
-        subject: true,
+        course: true,
       },
     });
 
@@ -57,7 +60,7 @@ export class ClassroomService {
       where: { classroom_id },
       include: {
         student: true,
-        subject: true,
+        course: true,
         teacherClassroom: {
           select: {
             teacher: {
@@ -75,13 +78,13 @@ export class ClassroomService {
     return existingClassroom;
   }
 
-  async getClassromm(classroom_id: number) {
+  async getClassroom(classroom_id: number) {
     const query = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
       include: {
         student: true,
         teacherClassroom: { select: { teacher: true } },
-        subject: true,
+        course: true,
       },
     });
     const { teacherClassroom, ...rest } = query;
@@ -111,12 +114,12 @@ export class ClassroomService {
         classroom_name,
         teacherClassroom: { createMany: { data: listTeachersId } },
         student: { connect: listStudentsId },
-        subject: { connect: [] },
+        course: { connect: [] },
       },
       include: {
         student: true,
         teacherClassroom: { select: { teacher: true } },
-        subject: true,
+        course: true,
       },
     });
     const { teacherClassroom, ...res } = data;
@@ -151,7 +154,7 @@ export class ClassroomService {
           select: {
             teacher: {
               select: {
-                subject: true,
+                course: true,
                 user: true,
                 teacher_id: true,
               },

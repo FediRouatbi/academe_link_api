@@ -30,7 +30,7 @@ export class TeacherService {
             email: true,
           },
         },
-        subject: true,
+        course: true,
       },
     });
   }
