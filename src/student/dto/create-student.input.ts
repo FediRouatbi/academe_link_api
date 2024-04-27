@@ -17,5 +17,6 @@ export class CreateStudent {
   @Field(() => String)
   password: string;
 
-  
+  @Field(() => Number, { nullable: true })
+  classroom_id?: number;
 }

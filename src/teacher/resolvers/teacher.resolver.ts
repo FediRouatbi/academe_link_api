@@ -13,6 +13,10 @@ export class TeacherResolver {
     return this.teacherService.getTeachers();
   }
 
+  @Query(() => Teacher)
+  async GetTeacher(@Args({ name: 'id', type: () => Int }) teacher_id: number) {
+    return this.teacherService.getTeacher(teacher_id);
+  }
   @Mutation(() => Teacher)
   async CreateTeacher(
     @Args('createTeacher') teacher: CreateTeacher,
@@ -32,5 +36,4 @@ export class TeacherResolver {
   async deleteTeacher(@Args('teacherId') userId: number) {
     return this.teacherService.deleteTeacher(userId);
   }
-
 }

@@ -6,9 +6,6 @@ export class Teacher {
   @Field(() => Int)
   teacher_id: number;
 
-  @Field(() => Int)
-  user_id: number;
-
   @Field(() => User)
   user: User;
 }

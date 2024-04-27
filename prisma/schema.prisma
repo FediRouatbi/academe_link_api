@@ -8,71 +8,102 @@ datasource db {
 }
 
 model user {
-  user_id              Int              @id @default(autoincrement())
-  user_name            String           @unique()
-  password_hash        String?
-  first_name           String
-  last_name            String
-  email                email?
-  roles_on_users       roles_on_users[]
-  createdAt            DateTime         @default(now())
-  puat                 DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-
-  student           student?
-  teacher           teacher?
-}
-model student{
-student_id Int  @id @default(autoincrement()) 
-user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
-user_id Int   @unique
-
-classroom   classroom? @relation(fields: [classroom_id],references: [classroom_id])     
-classroom_id  Int?  
-
+  user_id        Int              @id @default(autoincrement())
+  user_name      String           @unique()
+  email          String           @unique()
+  password_hash  String?
+  first_name     String
+  last_name      String
+  roles_on_users roles_on_users[]
+  createdAt      DateTime         @default(now())
+  puat           DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  student        student?
+  teacher        teacher?
+  topic          topic[]
 }
 
-model teacher{
-teacher_id Int  @id @default(autoincrement()) 
-user user  @relation(fields: [user_id],references: [user_id],onDelete: Cascade)
-user_id Int   @unique
-teacherClassroom   teacherClassroom[] 
-subject     subject[]
+model student {
+  student_id Int @id @default(autoincrement())
+
+  user    user @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int  @unique
+
+  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
+  classroom_id Int?
+}
+
+model teacher {
+  teacher_id       Int                @id @default(autoincrement())
+  user             user               @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id          Int                @unique
+  teacherClassroom teacherClassroom[]
+  course          course[]
+}
+
+model course {
+  id Int @id @default(autoincrement())
+
+  subject    subject @relation(fields: [subject_id], references: [id])
+  subject_id Int
+
+  teacher         teacher?     @relation(fields: [teacher_id], references: [teacher_id])
+  teacher_id      Int
+
+  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
+  classroom_id Int
+
+  topic        topic[]
+
+  @@unique([subject_id, teacher_id, classroom_id])
+
 }
 
 model subject {
-  subject_id   Int    @id @default(autoincrement())
-  subject_name String
-
-  teacher    teacher? @relation(fields: [teacher_id], references: [user_id])
-  teacher_id Int
-
-  classroom classroom? @relation(fields: [classroom_id],references: [classroom_id])
-  classroom_id Int
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  course   course[]
 }
+
 
 
 model classroom {
-  classroom_id Int @id @default(autoincrement())
+  classroom_id   Int    @id @default(autoincrement())
   classroom_name String @unique
 
-  subject    subject[]
-  student    student[]
+  course course[]
+  student student[]
 
-  teacherClassroom    teacherClassroom[]  
-
-  createdAt  DateTime @default(now())
+  teacherClassroom teacherClassroom[]
+  createdAt        DateTime           @default(now())
+  topic            topic[]
 }
 
-model teacherClassroom{
-classroom classroom @relation(fields: [classroom_id],references: [classroom_id])
-classroom_id Int  
+model teacherClassroom {
+  classroom    classroom @relation(fields: [classroom_id], references: [classroom_id])
+  classroom_id Int
 
-teacher teacher @relation(fields: [teacher_id],references: [teacher_id], onDelete: Cascade)
-teacher_id Int  
+  teacher    teacher @relation(fields: [teacher_id], references: [teacher_id], onDelete: Cascade)
+  teacher_id Int
 
-@@id([classroom_id, teacher_id])
+  @@id([classroom_id, teacher_id])
 }
+
+model topic {
+  topic_id Int @id @default(autoincrement())
+
+  content String
+
+  user    user @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id Int
+
+  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
+  classroom_id Int?
+
+  subject      course?   @relation(fields: [subject_id], references: [id])
+  subject_id   Int?
+}
+
 model role {
   role_id        Int              @id @default(autoincrement())
   name           String
@@ -104,15 +135,3 @@ enum RoleOnUserStatusEnum {
   ACTIVE
   BLOCKED
 }
-
-model email {
-  email_id     Int      @id @default(autoincrement())
-  email_value  String   @unique
-  is_validated Boolean  @default(false)
-  user         user     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  user_id      Int      @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-

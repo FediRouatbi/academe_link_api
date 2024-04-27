@@ -1,16 +1,18 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { Transform } from 'class-transformer';
 
 @InputType()
-export class CreateUser {
+export class CreateClassroom {
   @Field(() => String)
   classroom_name: string;
 
-  @Field(() => [String])
+  @Transform(({ value }) => value?.student_id)
+  @Field(() => [String], { defaultValue: [], nullable: true })
   subjects: string[];
 
-  @Field(() => [String])
+  @Field(() => [String], { defaultValue: [], nullable: true })
   students: string[];
 
-  @Field(() => [String])
+  @Field(() => [String], { defaultValue: [], nullable: true })
   teachers: string[];
 }

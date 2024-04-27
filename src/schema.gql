@@ -5,6 +5,7 @@
 type User {
   user_id: Int!
   user_name: String!
+  email: String!
   first_name: String!
   last_name: String!
   createdAt: DateTime!
@@ -16,41 +17,132 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type ClassroomTest {
+  classroom_id: Float!
+  classroom_name: String!
+  createdAt: DateTime!
+}
+
 type Student {
   student_id: Float!
-  user_id: Float!
-  classroom_id: Float!
+  classroom: ClassroomTest
   user: User!
 }
 
 type Teacher {
   teacher_id: Int!
-  user_id: Int!
   user: User!
+}
+
+type Subject {
+  """Example field (placeholder)"""
+  id: Int!
+
+  """Example field (placeholder)"""
+  name: String!
+}
+
+type Course {
+  classroom: Classroom!
+  teacher: Teacher!
+  subject: Subject!
 }
 
 type Classroom {
   classroom_id: String!
   classroom_name: String!
   createdAt: String!
-  student: [Student!]!
-  teacher: [Teacher!]!
-  subject: [String!]!
+  student: [Student!]
+  teacher: [Teacher!]
+  course: [Course!]
+}
+
+type Token {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+"""
+A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction.
+"""
+scalar JWT
+
+type Auth {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+type CurrentUser {
+  user_id: Int!
+  user_name: String!
+  first_name: String!
+  last_name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: RoleCodeEnum!
+}
+
+enum RoleCodeEnum {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+type Topic {
+  content: String!
 }
 
 type Query {
-  getClassromms: [Classroom!]!
+  getClassrooms: [Classroom!]!
+  getClassroom(id: Int!): Classroom!
   GetTeachers: [Teacher!]!
+  GetTeacher(id: Int!): Teacher!
   GetStudents: [Student!]!
+  getStudent(id: Int!): Student!
+  getCurrentUser: CurrentUser!
+  GetTopics: [Topic!]!
+  getTopicsByAuthor: [Topic!]!
+  getSubjects: [Subject!]!
+  getSubject(id: Int!): Subject!
+  getCourses: [Course!]!
+  getCourse(id: Int!): Course!
 }
 
 type Mutation {
-  creatClassroom(classroom: String!, teachersId: [Int!]!, studentsId: [Int!]!): Classroom!
+  creatClassroom(classroom: String!, teachersId: [Int!]! = [], studentsId: [Int!]! = []): Classroom!
+  editClassromm(editClassromm: UpdateClassroom!, id: Int!): Classroom!
   deleteClassroom(classroomId: Float!): Classroom!
   CreateTeacher(createTeacher: CreateTeacher!): Teacher!
   EditTeacher(editTeacher: UpdateTeacher!, id: Int!): Teacher!
   deleteTeacher(teacherId: Float!): Teacher!
   CreateStudent(createStudent: CreateStudent!): Student!
+  EditStudent(editStudent: UpdateStudent!, id: Int!): Student!
+  deleteStudent(studentId: Float!): Student!
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  refreshToken(token: JWT!): Token!
+  CreateTopic(createTopic: CreateTopic!): Topic!
+  EditTopic(editTopic: UpdateTopic!, topicId: Int!): Topic!
+  deleteTopic(topicId: Float!): Topic!
+  createSubject(createSubject: CreateSubjectInput!): Subject!
+  editSubject(id: Int!, editSubject: UpdateSubjectInput!): Subject!
+  deleteSubject(id: Int!): Subject!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  editCourse(updateCourseInput: UpdateCourseInput!): Course!
+  deleteCourse(id: Int!): Course!
+}
+
+input UpdateClassroom {
+  classroom_name: String
+  subjects: [String!] = []
+  students: [String!] = []
+  teachers: [String!] = []
 }
 
 input CreateTeacher {
@@ -75,4 +167,68 @@ input CreateStudent {
   user_name: String!
   email: String!
   password: String!
+  classroom_id: Float
+}
+
+input UpdateStudent {
+  first_name: String
+  last_name: String
+  user_name: String
+  email: String
+  password: String
+  classroom_id: Float
+}
+
+input SignupInput {
+  email: String!
+  user_name: String!
+  first_name: String!
+  last_name: String!
+  role: RoleCodeEnum!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input CreateTopic {
+  content: String!
+}
+
+input UpdateTopic {
+  content: String
+}
+
+input CreateSubjectInput {
+  """Example field (placeholder)"""
+  name: String!
+}
+
+input UpdateSubjectInput {
+  """Example field (placeholder)"""
+  name: String
+}
+
+input CreateCourseInput {
+  """Example field (placeholder)"""
+  subject_id: Int!
+
+  """Example field (placeholder)"""
+  teacher_id: Int!
+
+  """Example field (placeholder)"""
+  classroom_id: Int!
+}
+
+input UpdateCourseInput {
+  """Example field (placeholder)"""
+  subject_id: Int
+
+  """Example field (placeholder)"""
+  teacher_id: Int
+
+  """Example field (placeholder)"""
+  classroom_id: Int
+  id: Int!
 }

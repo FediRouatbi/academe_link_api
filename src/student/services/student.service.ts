@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { User } from 'src/common/entities/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { CreateStudent } from '../dto/create-student.input';
 import { RoleCodeEnum, RoleOnUserStatusEnum } from '@prisma/client';
+import { UpdateStudent } from '../dto/update-student.input';
+import { BcryptService } from 'src/common/services/bcrypt.service';
 
 @Injectable()
 export class StudentService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly bcryptService: BcryptService,
+  ) {}
 
   async getStudents() {
     return this.prismaService.student.findMany({
@@ -20,26 +24,20 @@ export class StudentService {
             createdAt: true,
             updatedAt: true,
             user_id: true,
+            email: true,
           },
         },
       },
     });
   }
-
-  // async getClassromm(classroom_id: number) {
-  //   return this.prismaService.classroom.findUnique({
-  //     where: { classroom_id },
-  //     include: {
-  //       student: true,
-  //       teacherClassroom: { select: { teacher: true } },
-  //       subject: true,
-  //     },
-  //   });
-  // }
+  async getStudent(student_id: number) {
+    return this.findOne(student_id);
+  }
 
   async createStudent(student: CreateStudent) {
     return this.prismaService.student.create({
       include: {
+        classroom: true,
         user: {
           select: {
             user_name: true,
@@ -48,17 +46,21 @@ export class StudentService {
             createdAt: true,
             updatedAt: true,
             user_id: true,
+            email: true,
           },
         },
       },
       data: {
-        classroom: { connect: { classroom_id: 59 } },
+        classroom: student.classroom_id && {
+          connect: { classroom_id: student.classroom_id },
+        },
         user: {
           create: {
             first_name: student?.first_name,
             last_name: student?.first_name,
             user_name: student?.user_name,
-            email: { create: { email_value: student?.email } },
+            email: student?.email,
+            password_hash: await this.bcryptService.hash(student?.password),
             roles_on_users: {
               create: [
                 {
@@ -77,16 +79,44 @@ export class StudentService {
     });
   }
 
-  // async editClassromm(classroom_id: number, classroom_name: string) {
-  //   return this.prismaService.classroom.update({
-  //     where: { classroom_id },
-  //     data: { classroom_name },
-  //   });
-  // }
+  async editStudent(student: UpdateStudent, student_id: number) {
+    await this.findOne(student_id);
 
-  // async deleteClassromm(classroomId: number) {
-  //   return this.prismaService.classroom.delete({
-  //     where: { classroom_id: classroomId },
-  //   });
-  // }
+    return this.prismaService.student.update({
+      where: { student_id },
+      data: {
+        user: {
+          update: {
+            first_name: student?.first_name,
+            last_name: student?.last_name,
+            user_name: student?.user_name,
+            email: student?.email,
+          },
+        },
+      },
+      select: {
+        classroom: true,
+        user: true,
+        student_id: true,
+      },
+    });
+  }
+
+  async findOne(student_id: number) {
+    const existingClassroom = await this.prismaService.student.findUnique({
+      where: { student_id },
+      include: { user: true, classroom: true },
+    });
+
+    if (!existingClassroom) {
+      throw new NotFoundException('Student not found');
+    }
+
+    return existingClassroom;
+  }
+  async deleteStudent(student_id: number) {
+    return this.prismaService.student.delete({
+      where: { student_id },
+    });
+  }
 }
