@@ -1,0 +1,148 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table user {
+  user_id Int [pk, increment]
+  user_name String [unique, not null]
+  email String [unique, not null]
+  password_hash String
+  first_name String [not null]
+  last_name String [not null]
+  roles_on_users roles_on_users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  puat DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  student student
+  teacher teacher
+  topic topic [not null]
+}
+
+Table student {
+  student_id Int [pk, increment]
+  user user [not null]
+  user_id Int [unique, not null]
+  classroom classroom
+  classroom_id Int
+}
+
+Table teacher {
+  teacher_id Int [pk, increment]
+  user user [not null]
+  user_id Int [unique, not null]
+  teacherClassroom teacherClassroom [not null]
+  course course [not null]
+}
+
+Table course {
+  id Int [pk, increment]
+  subject subject [not null]
+  subject_id Int [not null]
+  teacher teacher
+  teacher_id Int [not null]
+  classroom classroom
+  classroom_id Int [not null]
+  topic topic [not null]
+
+  indexes {
+    (subject_id, teacher_id, classroom_id) [unique]
+  }
+}
+
+Table subject {
+  id Int [pk, increment]
+  name String [unique, not null]
+  course course [not null]
+}
+
+Table classroom {
+  classroom_id Int [pk, increment]
+  classroom_name String [unique, not null]
+  course course [not null]
+  student student [not null]
+  teacherClassroom teacherClassroom [not null]
+  createdAt DateTime [default: `now()`, not null]
+  topic topic [not null]
+}
+
+Table teacherClassroom {
+  classroom classroom [not null]
+  classroom_id Int [not null]
+  teacher teacher [not null]
+  teacher_id Int [not null]
+
+  indexes {
+    (classroom_id, teacher_id) [pk]
+  }
+}
+
+Table topic {
+  topic_id Int [pk, increment]
+  content String [not null]
+  user user [not null]
+  user_id Int [not null]
+  classroom classroom
+  classroom_id Int
+  subject course
+  subject_id Int
+}
+
+Table role {
+  role_id Int [pk, increment]
+  name String [not null]
+  role_code RoleCodeEnum [unique, not null]
+  roles_on_users roles_on_users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table roles_on_users {
+  user user [not null]
+  user_id Int [not null]
+  role role [not null]
+  role_id Int [not null]
+  status RoleOnUserStatusEnum [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (user_id, role_id) [pk]
+  }
+}
+
+Enum RoleCodeEnum {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+Enum RoleOnUserStatusEnum {
+  ACTIVE
+  BLOCKED
+}
+
+Ref: student.user_id - user.user_id [delete: Cascade]
+
+Ref: student.classroom_id > classroom.classroom_id
+
+Ref: teacher.user_id - user.user_id [delete: Cascade]
+
+Ref: course.subject_id > subject.id
+
+Ref: course.teacher_id > teacher.teacher_id
+
+Ref: course.classroom_id > classroom.classroom_id
+
+Ref: teacherClassroom.classroom_id > classroom.classroom_id
+
+Ref: teacherClassroom.teacher_id > teacher.teacher_id [delete: Cascade]
+
+Ref: topic.user_id > user.user_id [delete: Cascade]
+
+Ref: topic.classroom_id > classroom.classroom_id
+
+Ref: topic.subject_id > course.id
+
+Ref: roles_on_users.user_id > user.user_id [delete: Cascade]
+
+Ref: roles_on_users.role_id > role.role_id [delete: Cascade]
