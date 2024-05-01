@@ -53,7 +53,6 @@ type Classroom {
   classroom_name: String!
   createdAt: String!
   student: [Student!]
-  teacher: [Teacher!]
   course: [Course!]
 }
 
@@ -151,6 +150,12 @@ input CreateTeacher {
   user_name: String!
   email: String!
   password: String!
+  classrooms: [ClassroomInput!]
+}
+
+input ClassroomInput {
+  classroom_id: Float!
+  subject_id: Float!
 }
 
 input UpdateTeacher {
@@ -159,6 +164,7 @@ input UpdateTeacher {
   user_name: String
   email: String
   password: String
+  classrooms: [ClassroomInput!]
 }
 
 input CreateStudent {

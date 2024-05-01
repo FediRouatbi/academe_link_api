@@ -26,7 +26,6 @@ export class Classroom {
       },
     ],
   })
-  teacherClassroom: Teacher[];
 
   @Field(() => [Course], { nullable: true })
   course: Course[];

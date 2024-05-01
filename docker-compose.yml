@@ -1,0 +1,26 @@
+# services:
+#   postgres:
+#     image: postgres
+#     environment:
+#       POSTGRES_USER: AcademeLink
+#       POSTGRES_PASSWORD: 123456a
+#       POSTGRES_DB: AcademeLink
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     networks:
+#       - backend
+
+#   redis:
+#     image: redis
+#     ports:
+#       - "6379:6379"
+#     networks:
+#       - backend
+
+# volumes:
+#   postgres_data:
+
+# networks:
+#   backend:

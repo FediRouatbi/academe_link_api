@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-dbml-generator"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -18,7 +18,7 @@ model user {
   createdAt      DateTime         @default(now())
   puat           DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  student        student?
+  student        student?         
   teacher        teacher?
   topic          topic[]
 }
@@ -29,7 +29,7 @@ model student {
   user    user @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id Int  @unique
 
-  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
+  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id], onDelete: Cascade)
   classroom_id Int?
 }
 
@@ -37,20 +37,19 @@ model teacher {
   teacher_id       Int                @id @default(autoincrement())
   user             user               @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id          Int                @unique
-  teacherClassroom teacherClassroom[]
   course          course[]
 }
 
 model course {
   id Int @id @default(autoincrement())
 
-  subject    subject @relation(fields: [subject_id], references: [id])
+  subject    subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
   subject_id Int
 
-  teacher         teacher?     @relation(fields: [teacher_id], references: [teacher_id])
+  teacher         teacher?     @relation(fields: [teacher_id], references: [teacher_id], onDelete: Cascade)
   teacher_id      Int
 
-  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
+  classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id], onDelete: Cascade)
   classroom_id Int
 
   topic        topic[]
@@ -71,23 +70,14 @@ model classroom {
   classroom_id   Int    @id @default(autoincrement())
   classroom_name String @unique
 
-  course course[]
-  student student[]
+  course course[]     
+  student student[]     
 
-  teacherClassroom teacherClassroom[]
   createdAt        DateTime           @default(now())
   topic            topic[]
 }
 
-model teacherClassroom {
-  classroom    classroom @relation(fields: [classroom_id], references: [classroom_id])
-  classroom_id Int
 
-  teacher    teacher @relation(fields: [teacher_id], references: [teacher_id], onDelete: Cascade)
-  teacher_id Int
-
-  @@id([classroom_id, teacher_id])
-}
 
 model topic {
   topic_id Int @id @default(autoincrement())

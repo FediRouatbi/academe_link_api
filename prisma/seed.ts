@@ -1,11 +1,6 @@
 import * as bcrypt from 'bcrypt';
 
-import {
-  PrismaClient,
-  RoleCodeEnum,
-  RoleOnUserStatusEnum,
-} from '@prisma/client';
-
+import { RoleCodeEnum, RoleOnUserStatusEnum,PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   console.log('Starting seeds ...');

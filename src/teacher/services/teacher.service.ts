@@ -66,6 +66,7 @@ export class TeacherService {
             },
           },
         },
+        course: { createMany: { data: teacher?.classrooms || [] } },
       },
       select: { user: true, user_id: true, teacher_id: true },
     });
@@ -91,7 +92,7 @@ export class TeacherService {
         user: true,
         user_id: true,
         teacher_id: true,
-        teacherClassroom: { select: { classroom: true } },
+        course: true,
       },
     });
   }

@@ -1,3 +1,4 @@
+import { Query } from '@nestjs/graphql';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { UpdateClassroom } from '../dto/update-classroom.input';
 import {
@@ -33,26 +34,17 @@ export class ClassroomService {
             },
           },
         },
-        teacherClassroom: {
+
+        course: {
           select: {
-            teacher: {
-              select: { user: true, teacher_id: true, user_id: true },
-            },
+            subject: { select: { name: true, id: true } },
+            teacher: { select: { user: true, teacher_id: true } },
           },
         },
-        course: true,
       },
     });
 
-    const data = query.map((el) => {
-      const { teacherClassroom, ...rest } = el;
-
-      const teacher = teacherClassroom.map((el) => el.teacher);
-
-      return { ...rest, teacher };
-    });
-
-    return data;
+    return query;
   }
 
   async findOne(classroom_id: number) {
@@ -61,13 +53,6 @@ export class ClassroomService {
       include: {
         student: true,
         course: true,
-        teacherClassroom: {
-          select: {
-            teacher: {
-              select: { user: true, teacher_id: true, user_id: true },
-            },
-          },
-        },
       },
     });
 
@@ -83,14 +68,11 @@ export class ClassroomService {
       where: { classroom_id },
       include: {
         student: true,
-        teacherClassroom: { select: { teacher: true } },
         course: true,
       },
     });
-    const { teacherClassroom, ...rest } = query;
 
-    const teacher = teacherClassroom?.map((el) => el.teacher);
-    return { ...rest, teacher };
+    return query;
   }
 
   async creatClassroom(
@@ -109,22 +91,19 @@ export class ClassroomService {
     const listTeachersId = teachersId.map((el) => ({ teacher_id: el }));
     const listStudentsId = studentsId.map((el) => ({ student_id: el }));
 
-    const data = await this.prismaService.classroom.create({
+    const query = await this.prismaService.classroom.create({
       data: {
         classroom_name,
-        teacherClassroom: { createMany: { data: listTeachersId } },
         student: { connect: listStudentsId },
-        course: { connect: [] },
+        course: { createMany: { data: [] } },
       },
       include: {
         student: true,
-        teacherClassroom: { select: { teacher: true } },
+
         course: true,
       },
     });
-    const { teacherClassroom, ...res } = data;
-    const teacher = teacherClassroom.map((el) => el.teacher);
-    return { ...res, teacher };
+    return query;
   }
 
   async editClassromm(classroom: UpdateClassroom, classroom_id: number) {
@@ -142,31 +121,18 @@ export class ClassroomService {
       data: {
         classroom_name: classroom?.classroom_name,
         student: { set: listStudentsId },
-        teacherClassroom: {
-          createMany: { data: listTeachersId },
-        },
       },
       select: {
         student: { include: { user: true } },
         classroom_name: true,
         classroom_id: true,
-        teacherClassroom: {
-          select: {
-            teacher: {
-              select: {
-                course: true,
-                user: true,
-                teacher_id: true,
-              },
-            },
-          },
-        },
+        course: true,
       },
     });
   }
 
   async deleteClassroom(classroomId: number) {
-    await this.findOne(classroomId);
+    //await this.findOne(classroomId);
 
     return this.prismaService.classroom.delete({
       where: { classroom_id: classroomId },
