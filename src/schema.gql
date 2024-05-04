@@ -102,7 +102,7 @@ type Query {
   getClassroom(id: Int!): Classroom!
   GetTeachers: [Teacher!]!
   GetTeacher(id: Int!): Teacher!
-  GetStudents: [Student!]!
+  GetStudents(hasClassroom: Boolean): [Student!]!
   getStudent(id: Int!): Student!
   getCurrentUser: CurrentUser!
   GetTopics: [Topic!]!
@@ -114,14 +114,14 @@ type Query {
 }
 
 type Mutation {
-  creatClassroom(classroom: String!, teachersId: [Int!]! = [], studentsId: [Int!]! = []): Classroom!
+  creatClassroom(createClassromm: CreateClassroom!): Classroom!
   editClassromm(editClassromm: UpdateClassroom!, id: Int!): Classroom!
   deleteClassroom(classroomId: Float!): Classroom!
   CreateTeacher(createTeacher: CreateTeacher!): Teacher!
   EditTeacher(editTeacher: UpdateTeacher!, id: Int!): Teacher!
   deleteTeacher(teacherId: Float!): Teacher!
   CreateStudent(createStudent: CreateStudent!): Student!
-  EditStudent(editStudent: UpdateStudent!, id: Int!): Student!
+  EditStudent(editStudent: UpdateStudent!): Student!
   deleteStudent(studentId: Float!): Student!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -137,11 +137,25 @@ type Mutation {
   deleteCourse(id: Int!): Course!
 }
 
+input CreateClassroom {
+  classroom_name: String!
+  studentsIds: [StudentsIds!]
+  teachersIds: [TeachersIds!]
+}
+
+input StudentsIds {
+  student_id: Float!
+}
+
+input TeachersIds {
+  teacher_id: Float!
+  subject_id: Float!
+}
+
 input UpdateClassroom {
   classroom_name: String
-  subjects: [String!] = []
-  students: [String!] = []
-  teachers: [String!] = []
+  studentsIds: [StudentsIds!]
+  teachersIds: [TeachersIds!]
 }
 
 input CreateTeacher {
@@ -183,6 +197,7 @@ input UpdateStudent {
   email: String
   password: String
   classroom_id: Float
+  student_id: Float!
 }
 
 input SignupInput {

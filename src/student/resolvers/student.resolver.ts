@@ -10,8 +10,11 @@ export class UserResolver {
   constructor(private readonly studentService: StudentService) {}
 
   @Query(() => [Student])
-  async GetStudents(): Promise<Student[]> {
-    return this.studentService.getStudents();
+  async GetStudents(
+    @Args('hasClassroom', { type: () => Boolean, nullable: true })
+    hasClassroom?: boolean,
+  ): Promise<Student[]> {
+    return this.studentService.getStudents(hasClassroom);
   }
 
   @Query(() => Student)
@@ -29,9 +32,8 @@ export class UserResolver {
   @Mutation(() => Student)
   async EditStudent(
     @Args('editStudent') student: UpdateStudent,
-    @Args({ name: 'id', type: () => Int }) id: number,
   ): Promise<Student> {
-    return this.studentService.editStudent(student, id);
+    return this.studentService.editStudent(student);
   }
 
   @Mutation(() => Student)

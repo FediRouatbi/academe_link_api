@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { CreateStudent } from '../dto/create-student.input';
-import { RoleCodeEnum, RoleOnUserStatusEnum } from '@prisma/client';
+import { Prisma, RoleCodeEnum, RoleOnUserStatusEnum } from '@prisma/client';
 import { UpdateStudent } from '../dto/update-student.input';
 import { BcryptService } from 'src/common/services/bcrypt.service';
 
@@ -12,8 +12,13 @@ export class StudentService {
     private readonly bcryptService: BcryptService,
   ) {}
 
-  async getStudents() {
+  async getStudents(hasClassroom: boolean) {
+    const where: Prisma.studentWhereInput = {
+      ...(hasClassroom === false && { classroom: { is: null } }),
+    };
+
     return this.prismaService.student.findMany({
+      where,
       include: {
         classroom: true,
         user: {
@@ -79,12 +84,15 @@ export class StudentService {
     });
   }
 
-  async editStudent(student: UpdateStudent, student_id: number) {
-    await this.findOne(student_id);
+  async editStudent(student: UpdateStudent) {
+    await this.findOne(student?.student_id);
 
     return this.prismaService.student.update({
-      where: { student_id },
+      where: { student_id: student?.student_id },
       data: {
+        classroom: {
+          connect: { classroom_id: student?.classroom_id },
+        },
         user: {
           update: {
             first_name: student?.first_name,
@@ -94,6 +102,7 @@ export class StudentService {
           },
         },
       },
+
       select: {
         classroom: true,
         user: true,

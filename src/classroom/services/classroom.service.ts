@@ -1,4 +1,3 @@
-import { Query } from '@nestjs/graphql';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { UpdateClassroom } from '../dto/update-classroom.input';
 import {
@@ -6,6 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { CreateClassroom } from '../dto/create-classroom.input';
 
 @Injectable()
 export class ClassroomService {
@@ -75,27 +75,20 @@ export class ClassroomService {
     return query;
   }
 
-  async creatClassroom(
-    classroom_name: string,
-    teachersId: number[],
-    studentsId: number[],
-  ) {
+  async creatClassroom(classroom: CreateClassroom) {
     const classroomExist = await this.prismaService.classroom.findUnique({
-      where: { classroom_name },
+      where: { classroom_name: classroom?.classroom_name },
     });
     if (classroomExist)
       throw new ConflictException(
         'Classroom with the given name already exists',
       );
 
-    const listTeachersId = teachersId.map((el) => ({ teacher_id: el }));
-    const listStudentsId = studentsId.map((el) => ({ student_id: el }));
-
     const query = await this.prismaService.classroom.create({
       data: {
-        classroom_name,
-        student: { connect: listStudentsId },
-        course: { createMany: { data: [] } },
+        classroom_name: classroom?.classroom_name,
+        student: { connect: classroom?.studentsIds || [] },
+        course: { createMany: { data: classroom?.teachersIds || [] } },
       },
       include: {
         student: true,
@@ -109,18 +102,11 @@ export class ClassroomService {
   async editClassromm(classroom: UpdateClassroom, classroom_id: number) {
     await this.findOne(classroom_id);
 
-    const listTeachersId = classroom?.teachers?.map((el) => ({
-      teacher_id: +el,
-    }));
-    const listStudentsId = classroom?.students?.map((el) => ({
-      student_id: +el,
-    }));
-
     return this.prismaService.classroom.update({
       where: { classroom_id },
       data: {
         classroom_name: classroom?.classroom_name,
-        student: { set: listStudentsId },
+        student: { set: classroom?.studentsIds },
       },
       select: {
         student: { include: { user: true } },
@@ -132,7 +118,7 @@ export class ClassroomService {
   }
 
   async deleteClassroom(classroomId: number) {
-    //await this.findOne(classroomId);
+    await this.findOne(classroomId);
 
     return this.prismaService.classroom.delete({
       where: { classroom_id: classroomId },
