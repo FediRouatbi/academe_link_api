@@ -21,7 +21,14 @@ export class CourseService {
   findAll() {
     return this.prismaService.course.findMany({
       select: {
-        classroom: true,
+        classroom: {
+          select: {
+            student: true,
+            classroom_id: true,
+            classroom_name: true,
+            createdAt: true,
+          },
+        },
         teacher: { select: { user: true, teacher_id: true } },
         subject: true,
       },
@@ -29,8 +36,7 @@ export class CourseService {
   }
 
   findOne(id: number) {
-    this.prismaService.course.findUnique({ where: { id } });
-    return;
+    return this.prismaService.course.findUnique({ where: { id } });
   }
 
   update(id: number, { subject_id }: UpdateCourseInput) {

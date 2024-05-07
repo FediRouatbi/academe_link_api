@@ -16,6 +16,11 @@ export class TopicService {
       where: { user_id: { equals: user_id } },
     });
   }
+  async getTopicsByCourseId(course_id: number) {
+    return this.prismaService.topic.findMany({
+      where: { course_id },
+    });
+  }
 
   async createTopic(topic: CreateTopic, user_id: number) {
     return this.prismaService.topic.create({

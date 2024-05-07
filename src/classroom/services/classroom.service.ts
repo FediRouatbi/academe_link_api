@@ -11,11 +11,13 @@ import { CreateClassroom } from '../dto/create-classroom.input';
 export class ClassroomService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getClassrooms() {
+  async getClassrooms(search?: string) {
     const query = await this.prismaService.classroom.findMany({
+      where: { classroom_name: search },
       orderBy: {
         createdAt: 'desc',
       },
+
       include: {
         student: {
           select: {
@@ -51,7 +53,7 @@ export class ClassroomService {
     const existingClassroom = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
       include: {
-        student: true,
+        student: { select: { user: true, student_id: true } },
         course: true,
       },
     });
@@ -67,8 +69,23 @@ export class ClassroomService {
     const query = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
       include: {
-        student: true,
-        course: true,
+        student: { select: { user: true, student_id: true } },
+        course: {
+          select: {
+            id: true,
+            createdAt: true,
+            subject: true,
+            teacher: {
+              select: {
+                teacher_id: true,
+                user: true,
+
+                updatedAt: true,
+              },
+            },
+          },
+        },
+        topic: true,
       },
     });
 
@@ -87,25 +104,26 @@ export class ClassroomService {
     const query = await this.prismaService.classroom.create({
       data: {
         classroom_name: classroom?.classroom_name,
+        description: classroom?.description,
         student: { connect: classroom?.studentsIds || [] },
         course: { createMany: { data: classroom?.teachersIds || [] } },
       },
       include: {
         student: true,
-
         course: true,
       },
     });
     return query;
   }
 
-  async editClassromm(classroom: UpdateClassroom, classroom_id: number) {
-    await this.findOne(classroom_id);
+  async editClassromm(classroom: UpdateClassroom) {
+    await this.findOne(classroom?.classroom_id);
 
     return this.prismaService.classroom.update({
-      where: { classroom_id },
+      where: { classroom_id: classroom?.classroom_id },
       data: {
         classroom_name: classroom?.classroom_name,
+        description: classroom?.description,
         student: { set: classroom?.studentsIds },
       },
       select: {

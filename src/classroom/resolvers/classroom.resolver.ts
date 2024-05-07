@@ -27,11 +27,8 @@ export class ClassroomResolver {
     return this.classroomService.creatClassroom(classroom);
   }
   @Mutation(() => Classroom)
-  async editClassromm(
-    @Args('editClassromm') classroom: UpdateClassroom,
-    @Args({ name: 'id', type: () => Int }) classroom_id: number,
-  ) {
-    return this.classroomService?.editClassromm(classroom, classroom_id);
+  async editClassromm(@Args('editClassromm') classroom: UpdateClassroom) {
+    return this.classroomService?.editClassromm(classroom);
   }
 
   @Mutation(() => Classroom)

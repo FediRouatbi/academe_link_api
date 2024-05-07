@@ -20,6 +20,6 @@ export class Student {
   @Field(() => ClassroomTest, { nullable: true })
   classroom: ClassroomTest;
 
-  @Field(() => User)
+  @Field(() => User, { nullable: true })
   user: User;
 }

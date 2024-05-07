@@ -20,6 +20,9 @@ export class CreateClassroom {
   @Field(() => String)
   classroom_name: string;
 
+  @Field(() => String)
+  description: string;
+
   @Field(() => [StudentsIds], { nullable: true })
   studentsIds: StudentsIds[] | null;
 

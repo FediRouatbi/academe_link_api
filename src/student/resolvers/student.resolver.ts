@@ -1,4 +1,3 @@
-import { user, student } from './../../../node_modules/.prisma/client/index.d';
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { StudentService } from '../services/student.service';
 import { Student } from '../entities/create-student.entity';

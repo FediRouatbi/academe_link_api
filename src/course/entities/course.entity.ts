@@ -5,6 +5,9 @@ import { Teacher } from 'src/teacher/entities/get-teacher.entity';
 
 @ObjectType()
 export class Course {
+  @Field(() => Number)
+  id: number;
+
   @Field(() => Classroom)
   classroom: Classroom;
 
@@ -13,4 +16,10 @@ export class Course {
 
   @Field(() => Subject)
   subject: Subject;
+
+  @Field(() => Date, { nullable: true })
+  createdAt: Date;
+
+  @Field(() => Date, { nullable: true })
+  updatedAt: Date;
 }

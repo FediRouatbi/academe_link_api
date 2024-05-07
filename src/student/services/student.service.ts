@@ -123,9 +123,19 @@ export class StudentService {
 
     return existingClassroom;
   }
+
+  
   async deleteStudent(student_id: number) {
-    return this.prismaService.student.delete({
-      where: { student_id },
+    const query = await this.prismaService.user.findFirst({
+      where: { student: { student_id } },
+      select: { user_id: true },
+    });
+
+    if (!query) throw new NotFoundException('Student not found');
+
+    return this.prismaService.user.delete({
+      where: { user_id: query.user_id },
+      select: { student: true },
     });
   }
 }

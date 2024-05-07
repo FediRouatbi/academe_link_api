@@ -31,6 +31,8 @@ model student {
 
   classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id])
   classroom_id Int?
+
+  updatedAt      DateTime         @updatedAt
 }
 
 model teacher {
@@ -38,6 +40,7 @@ model teacher {
   user             user               @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id          Int                @unique
   course          course[]
+  updatedAt      DateTime         @updatedAt
 }
 
 model course {
@@ -54,6 +57,9 @@ model course {
 
   topic        topic[]
 
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
   @@unique([subject_id, teacher_id, classroom_id])
 
 }
@@ -62,6 +68,9 @@ model subject {
   id      Int    @id @default(autoincrement())
   name    String @unique
   course   course[]
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 
@@ -69,12 +78,16 @@ model subject {
 model classroom {
   classroom_id   Int    @id @default(autoincrement())
   classroom_name String @unique
+  description   String? 
 
   course course[]     
   student student[]     
 
   createdAt        DateTime           @default(now())
+  updatedAt      DateTime         @updatedAt
   topic            topic[]
+
+
 }
 
 
@@ -90,8 +103,11 @@ model topic {
   classroom    classroom? @relation(fields: [classroom_id], references: [classroom_id], onDelete: Cascade)
   classroom_id Int?
 
-  subject      course?   @relation(fields: [subject_id], references: [id], onDelete: Cascade)
-  subject_id   Int?
+  course      course?   @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id   Int?
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model role {

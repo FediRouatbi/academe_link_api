@@ -26,12 +26,7 @@ type ClassroomTest {
 type Student {
   student_id: Float!
   classroom: ClassroomTest
-  user: User!
-}
-
-type Teacher {
-  teacher_id: Int!
-  user: User!
+  user: User
 }
 
 type Subject {
@@ -42,16 +37,31 @@ type Subject {
   name: String!
 }
 
+type TeacherCourses {
+  classroom_id: Float!
+  subject_id: Float!
+}
+
+type Teacher {
+  teacher_id: Int!
+  user: User!
+  course: [TeacherCourses!]!
+}
+
 type Course {
+  id: Float!
   classroom: Classroom!
   teacher: Teacher!
   subject: Subject!
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type Classroom {
-  classroom_id: String!
+  classroom_id: Float!
   classroom_name: String!
-  createdAt: String!
+  description: String!
+  createdAt: DateTime!
   student: [Student!]
   course: [Course!]
 }
@@ -106,7 +116,8 @@ type Query {
   getStudent(id: Int!): Student!
   getCurrentUser: CurrentUser!
   GetTopics: [Topic!]!
-  getTopicsByAuthor: [Topic!]!
+  getTopicsByAuthor(authorID: Int!): [Topic!]!
+  getTopicsByCourseId(courseID: Int!): [Topic!]!
   getSubjects: [Subject!]!
   getSubject(id: Int!): Subject!
   getCourses: [Course!]!
@@ -115,10 +126,10 @@ type Query {
 
 type Mutation {
   creatClassroom(createClassromm: CreateClassroom!): Classroom!
-  editClassromm(editClassromm: UpdateClassroom!, id: Int!): Classroom!
+  editClassromm(editClassromm: UpdateClassroom!): Classroom!
   deleteClassroom(classroomId: Float!): Classroom!
   CreateTeacher(createTeacher: CreateTeacher!): Teacher!
-  EditTeacher(editTeacher: UpdateTeacher!, id: Int!): Teacher!
+  EditTeacher(editTeacher: UpdateTeacher!): Teacher!
   deleteTeacher(teacherId: Float!): Teacher!
   CreateStudent(createStudent: CreateStudent!): Student!
   EditStudent(editStudent: UpdateStudent!): Student!
@@ -139,6 +150,7 @@ type Mutation {
 
 input CreateClassroom {
   classroom_name: String!
+  description: String!
   studentsIds: [StudentsIds!]
   teachersIds: [TeachersIds!]
 }
@@ -154,8 +166,10 @@ input TeachersIds {
 
 input UpdateClassroom {
   classroom_name: String
+  description: String
   studentsIds: [StudentsIds!]
   teachersIds: [TeachersIds!]
+  classroom_id: Float!
 }
 
 input CreateTeacher {
@@ -179,6 +193,7 @@ input UpdateTeacher {
   email: String
   password: String
   classrooms: [ClassroomInput!]
+  teacher_id: Float!
 }
 
 input CreateStudent {

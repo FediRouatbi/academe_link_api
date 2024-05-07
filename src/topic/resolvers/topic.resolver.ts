@@ -15,10 +15,18 @@ export class TopicResolver {
   async GetTopics(): Promise<Topic[]> {
     return this.topicService.getTopics();
   }
-  @UseGuards(GqlAuthGuard)
+
   @Query(() => [Topic])
-  async getTopicsByAuthor(@UserEntity() user: CurrentUser) {
-    return this.topicService.getTopicsByAuthor(user?.user_id);
+  async getTopicsByAuthor(
+    @Args({ name: 'authorID', type: () => Int }) id: number,
+  ) {
+    return this.topicService.getTopicsByAuthor(id);
+  }
+  @Query(() => [Topic])
+  async getTopicsByCourseId(
+    @Args({ name: 'courseID', type: () => Int }) course_id: number,
+  ) {
+    return this.topicService.getTopicsByCourseId(course_id);
   }
 
   @UseGuards(GqlAuthGuard)
