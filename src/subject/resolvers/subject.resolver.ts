@@ -15,10 +15,6 @@ export class SubjectResolver {
 
   @Query(() => [Subject], { name: 'getSubjects' })
   async getSubjects() {
-    const a=await this.subjectService.findAll();
-    console.log(a[0].course);
-    
-
     return this.subjectService.findAll();
   }
 

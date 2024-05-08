@@ -6,6 +6,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard, UserEntity } from 'src/auth/gql-auth.guard';
 import { CurrentUser } from 'src/auth/dto/user.input';
 import { UpdateTopic } from '../dto/update-topic.input';
+import { CourseId } from '../dto/courseId-topic.input';
 
 @Resolver()
 export class TopicResolver {
@@ -35,8 +36,9 @@ export class TopicResolver {
     @Args('createTopic')
     topic: CreateTopic,
     @UserEntity() user: CurrentUser,
+    @Args('courseId', { nullable: true }) courseId?: CourseId,
   ): Promise<Topic> {
-    return this.topicService.createTopic(topic, user?.user_id);
+    return this.topicService.createTopic(topic, user?.user_id, courseId);
   }
 
   @Mutation(() => Topic)

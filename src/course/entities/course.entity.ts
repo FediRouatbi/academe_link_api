@@ -2,6 +2,7 @@ import { Subject } from './../../subject/entities/subject.entity';
 import { Classroom } from './../../classroom/entities/create-classroom.entity';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Teacher } from 'src/teacher/entities/get-teacher.entity';
+import { Topic } from 'src/topic/entities/topic.entity';
 
 @ObjectType()
 export class Course {
@@ -22,4 +23,7 @@ export class Course {
 
   @Field(() => Date, { nullable: true })
   updatedAt: Date;
+
+  @Field(() => [Topic], { nullable: true })
+  topic: [Topic];
 }

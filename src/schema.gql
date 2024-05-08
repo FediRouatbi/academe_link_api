@@ -48,6 +48,10 @@ type Teacher {
   course: [TeacherCourses!]!
 }
 
+type Topic {
+  content: String!
+}
+
 type Course {
   id: Float!
   classroom: Classroom!
@@ -55,6 +59,7 @@ type Course {
   subject: Subject!
   createdAt: DateTime
   updatedAt: DateTime
+  topic: [Topic!]
 }
 
 type Classroom {
@@ -103,10 +108,6 @@ enum RoleCodeEnum {
   STUDENT
 }
 
-type Topic {
-  content: String!
-}
-
 type Query {
   getClassrooms: [Classroom!]!
   getClassroom(id: Int!): Classroom!
@@ -137,7 +138,7 @@ type Mutation {
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
-  CreateTopic(createTopic: CreateTopic!): Topic!
+  CreateTopic(createTopic: CreateTopic!, courseId: CourseId): Topic!
   EditTopic(editTopic: UpdateTopic!, topicId: Int!): Topic!
   deleteTopic(topicId: Float!): Topic!
   createSubject(createSubject: CreateSubjectInput!): Subject!
@@ -230,6 +231,12 @@ input LoginInput {
 
 input CreateTopic {
   content: String!
+}
+
+input CourseId {
+  classroom_id: Float
+  teacher_id: Float
+  subject_id: Float
 }
 
 input UpdateTopic {

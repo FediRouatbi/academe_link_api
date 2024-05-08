@@ -85,7 +85,6 @@ export class ClassroomService {
             },
           },
         },
-        topic: true,
       },
     });
 
