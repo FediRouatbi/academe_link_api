@@ -27,6 +27,7 @@ import { CourseModule } from './course/course.module';
       },
       driver: ApolloDriver,
       playground: false,
+      introspection: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       plugins: [
         ApolloServerPluginLandingPageLocalDefault({ includeCookies: true }),
