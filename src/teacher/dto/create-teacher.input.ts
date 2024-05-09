@@ -1,7 +1,13 @@
-import { MinLength } from 'class-validator';
-
 import { Field, InputType } from '@nestjs/graphql';
 
+@InputType()
+export class ClassroomInput {
+  @Field(() => Number)
+  classroom_id: number;
+
+  @Field(() => Number)
+  subject_id: number;
+}
 @InputType()
 export class CreateTeacher {
   @Field(() => String)
@@ -18,4 +24,7 @@ export class CreateTeacher {
 
   @Field(() => String)
   password: string;
+
+  @Field(() => [ClassroomInput], { nullable: true })
+  classrooms: ClassroomInput[] | null;
 }

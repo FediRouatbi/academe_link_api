@@ -2,31 +2,23 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Student } from 'src/student/entities/create-student.entity';
 import { Teacher } from 'src/teacher/entities/get-teacher.entity';
 import { Course } from 'src/course/entities/course.entity';
+
 @ObjectType()
 export class Classroom {
-  @Field(() => String)
-  classroom_id: string;
+  @Field(() => Number)
+  classroom_id: number;
 
   @Field(() => String)
   classroom_name: string;
 
   @Field(() => String)
-  createdAt: string;
+  description: string;
+
+  @Field(() => Date)
+  createdAt: Date;
 
   @Field(() => [Student], { nullable: true })
   student: Student[];
-
-  @Field(() => [Teacher], {
-    nullable: true,
-    name: 'teacher',
-    middleware: [
-      async (c, next) => {
-        const value = await next();
-        return value?.map((el) => el.teacher);
-      },
-    ],
-  })
-  teacherClassroom: Teacher[];
 
   @Field(() => [Course], { nullable: true })
   course: Course[];

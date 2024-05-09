@@ -4,6 +4,7 @@ import { Classroom } from '../entities/create-classroom.entity';
 import { UpdateClassroom } from '../dto/update-classroom.input';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
+import { CreateClassroom } from '../dto/create-classroom.input';
 
 @Resolver()
 export class ClassroomResolver {
@@ -22,25 +23,12 @@ export class ClassroomResolver {
   }
 
   @Mutation(() => Classroom)
-  async creatClassroom(
-    @Args('classroom') classroom_name: string,
-    @Args('teachersId', { type: () => [Int], defaultValue: [] })
-    teachersId?: number[],
-    @Args('studentsId', { type: () => [Int], defaultValue: [] })
-    studentsId?: number[],
-  ) {
-    return this.classroomService.creatClassroom(
-      classroom_name,
-      teachersId,
-      studentsId,
-    );
+  async creatClassroom(@Args('createClassromm') classroom: CreateClassroom) {
+    return this.classroomService.creatClassroom(classroom);
   }
   @Mutation(() => Classroom)
-  async editClassromm(
-    @Args('editClassromm') classroom: UpdateClassroom,
-    @Args({ name: 'id', type: () => Int }) classroom_id: number,
-  ) {
-    return this.classroomService?.editClassromm(classroom, classroom_id);
+  async editClassromm(@Args('editClassromm') classroom: UpdateClassroom) {
+    return this.classroomService?.editClassromm(classroom);
   }
 
   @Mutation(() => Classroom)

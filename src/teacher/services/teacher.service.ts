@@ -66,16 +66,26 @@ export class TeacherService {
             },
           },
         },
+        course: { createMany: { data: teacher?.classrooms || [] } },
       },
-      select: { user: true, user_id: true, teacher_id: true },
+      select: {
+        user: true,
+        user_id: true,
+        teacher_id: true,
+        course: { select: { classroom_id: true, subject_id: true } },
+      },
     });
   }
 
-  async editTeacher(teacher: UpdateTeacher, id: number): Promise<Teacher> {
-    await this?.isTeachernameExists(teacher?.user_name, teacher?.email, id);
+  async editTeacher(teacher: UpdateTeacher): Promise<Teacher> {
+    await this?.isTeachernameExists(
+      teacher?.user_name,
+      teacher?.email,
+      teacher?.teacher_id,
+    );
 
     return this.prismaService.teacher.update({
-      where: { teacher_id: id },
+      where: { teacher_id: teacher?.teacher_id },
 
       data: {
         user: {
@@ -91,7 +101,7 @@ export class TeacherService {
         user: true,
         user_id: true,
         teacher_id: true,
-        teacherClassroom: { select: { classroom: true } },
+        course: { select: { classroom_id: true, subject_id: true } },
       },
     });
   }
@@ -128,11 +138,16 @@ export class TeacherService {
     return existingClassroom;
   }
   async deleteTeacher(teacher_id: number) {
-    await this.findOne(teacher_id);
+    const query = await this.prismaService.user.findFirst({
+      where: { teacher: { teacher_id } },
+      select: { user_id: true },
+    });
 
-    return this.prismaService.teacher.delete({
-      where: { teacher_id },
-      select: { teacher_id: true, user_id: true, user: true },
+    if (!query) throw new NotFoundException('Teacher not found');
+
+    return this.prismaService.user.delete({
+      where: { user_id: query.user_id },
+      select: { teacher: true },
     });
   }
 }

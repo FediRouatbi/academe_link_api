@@ -3,6 +3,9 @@ import { Course } from '../entities/course.entity';
 import { CourseService } from '../services/course.service';
 import { CreateCourseInput } from '../dto/create-course.input';
 import { UpdateCourseInput } from '../dto/update-course.input';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard, UserEntity } from 'src/auth/gql-auth.guard';
+import { CurrentUser } from 'src/auth/dto/user.input';
 
 @Resolver(() => Course)
 export class CourseResolver {
@@ -14,10 +17,10 @@ export class CourseResolver {
   ) {
     return this.courseService.create(createCourseInput);
   }
-
+  @UseGuards(GqlAuthGuard)
   @Query(() => [Course], { name: 'getCourses' })
-  findAll() {
-    return this.courseService.findAll();
+  async findAll(@UserEntity() user: CurrentUser) {
+    return this.courseService.findAll(user);
   }
 
   @Query(() => Course, { name: 'getCourse' })

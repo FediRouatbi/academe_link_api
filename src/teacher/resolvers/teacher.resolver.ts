@@ -27,9 +27,8 @@ export class TeacherResolver {
   @Mutation(() => Teacher)
   async EditTeacher(
     @Args('editTeacher') teacher: UpdateTeacher,
-    @Args({ name: 'id', type: () => Int }) id: number,
   ): Promise<Teacher> {
-    return this.teacherService.editTeacher(teacher, id);
+    return this.teacherService.editTeacher(teacher);
   }
 
   @Mutation(() => Teacher)

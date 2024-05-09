@@ -13,6 +13,7 @@ export class SubjectService {
 
   findAll() {
     return this.prismaService.subject.findMany({
+      orderBy: { createdAt: 'desc' },
       select: {
         course: {
           select: { teacher: { select: { teacher_id: true, user: true } } },

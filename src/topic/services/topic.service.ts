@@ -16,11 +16,37 @@ export class TopicService {
       where: { user_id: { equals: user_id } },
     });
   }
+  async getTopicsByCourseId(course_id: number) {
+    return this.prismaService.topic.findMany({
+      where: { course_id },
+    });
+  }
 
-  async createTopic(topic: CreateTopic, user_id: number) {
+  async createTopic(
+    topic: CreateTopic,
+    user_id: number,
+    {
+      classroom_id,
+      teacher_id,
+      subject_id,
+    }: { classroom_id?: number; teacher_id?: number; subject_id?: number },
+  ) {
+    const courseId =
+      classroom_id && teacher_id && subject_id
+        ? { classroom_id, teacher_id, subject_id }
+        : null;
+    const connect = {
+      subject_id_teacher_id_classroom_id: courseId,
+    };
     return this.prismaService.topic.create({
       data: {
         content: topic?.content,
+        ...(courseId && {
+          course: {
+            connect: connect,
+          },
+        }),
+
         user: { connect: { user_id: user_id } },
       },
     });

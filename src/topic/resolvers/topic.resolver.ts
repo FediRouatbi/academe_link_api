@@ -6,6 +6,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard, UserEntity } from 'src/auth/gql-auth.guard';
 import { CurrentUser } from 'src/auth/dto/user.input';
 import { UpdateTopic } from '../dto/update-topic.input';
+import { CourseId } from '../dto/courseId-topic.input';
 
 @Resolver()
 export class TopicResolver {
@@ -15,10 +16,18 @@ export class TopicResolver {
   async GetTopics(): Promise<Topic[]> {
     return this.topicService.getTopics();
   }
-  @UseGuards(GqlAuthGuard)
+
   @Query(() => [Topic])
-  async getTopicsByAuthor(@UserEntity() user: CurrentUser) {
-    return this.topicService.getTopicsByAuthor(user?.user_id);
+  async getTopicsByAuthor(
+    @Args({ name: 'authorID', type: () => Int }) id: number,
+  ) {
+    return this.topicService.getTopicsByAuthor(id);
+  }
+  @Query(() => [Topic])
+  async getTopicsByCourseId(
+    @Args({ name: 'courseID', type: () => Int }) course_id: number,
+  ) {
+    return this.topicService.getTopicsByCourseId(course_id);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -27,8 +36,9 @@ export class TopicResolver {
     @Args('createTopic')
     topic: CreateTopic,
     @UserEntity() user: CurrentUser,
+    @Args('courseId', { nullable: true }) courseId?: CourseId,
   ): Promise<Topic> {
-    return this.topicService.createTopic(topic, user?.user_id);
+    return this.topicService.createTopic(topic, user?.user_id, courseId);
   }
 
   @Mutation(() => Topic)

@@ -26,12 +26,7 @@ type ClassroomTest {
 type Student {
   student_id: Float!
   classroom: ClassroomTest
-  user: User!
-}
-
-type Teacher {
-  teacher_id: Int!
-  user: User!
+  user: User
 }
 
 type Subject {
@@ -42,18 +37,37 @@ type Subject {
   name: String!
 }
 
+type TeacherCourses {
+  classroom_id: Float!
+  subject_id: Float!
+}
+
+type Teacher {
+  teacher_id: Int!
+  user: User!
+  course: [TeacherCourses!]!
+}
+
+type Topic {
+  content: String!
+}
+
 type Course {
+  id: Float!
   classroom: Classroom!
   teacher: Teacher!
   subject: Subject!
+  createdAt: DateTime
+  updatedAt: DateTime
+  topic: [Topic!]
 }
 
 type Classroom {
-  classroom_id: String!
+  classroom_id: Float!
   classroom_name: String!
-  createdAt: String!
+  description: String!
+  createdAt: DateTime!
   student: [Student!]
-  teacher: [Teacher!]
   course: [Course!]
 }
 
@@ -94,20 +108,17 @@ enum RoleCodeEnum {
   STUDENT
 }
 
-type Topic {
-  content: String!
-}
-
 type Query {
   getClassrooms: [Classroom!]!
   getClassroom(id: Int!): Classroom!
   GetTeachers: [Teacher!]!
   GetTeacher(id: Int!): Teacher!
-  GetStudents: [Student!]!
+  GetStudents(hasClassroom: Boolean): [Student!]!
   getStudent(id: Int!): Student!
   getCurrentUser: CurrentUser!
   GetTopics: [Topic!]!
-  getTopicsByAuthor: [Topic!]!
+  getTopicsByAuthor(authorID: Int!): [Topic!]!
+  getTopicsByCourseId(courseID: Int!): [Topic!]!
   getSubjects: [Subject!]!
   getSubject(id: Int!): Subject!
   getCourses: [Course!]!
@@ -115,19 +126,19 @@ type Query {
 }
 
 type Mutation {
-  creatClassroom(classroom: String!, teachersId: [Int!]! = [], studentsId: [Int!]! = []): Classroom!
-  editClassromm(editClassromm: UpdateClassroom!, id: Int!): Classroom!
+  creatClassroom(createClassromm: CreateClassroom!): Classroom!
+  editClassromm(editClassromm: UpdateClassroom!): Classroom!
   deleteClassroom(classroomId: Float!): Classroom!
   CreateTeacher(createTeacher: CreateTeacher!): Teacher!
-  EditTeacher(editTeacher: UpdateTeacher!, id: Int!): Teacher!
+  EditTeacher(editTeacher: UpdateTeacher!): Teacher!
   deleteTeacher(teacherId: Float!): Teacher!
   CreateStudent(createStudent: CreateStudent!): Student!
-  EditStudent(editStudent: UpdateStudent!, id: Int!): Student!
+  EditStudent(editStudent: UpdateStudent!): Student!
   deleteStudent(studentId: Float!): Student!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
-  CreateTopic(createTopic: CreateTopic!): Topic!
+  CreateTopic(createTopic: CreateTopic!, courseId: CourseId): Topic!
   EditTopic(editTopic: UpdateTopic!, topicId: Int!): Topic!
   deleteTopic(topicId: Float!): Topic!
   createSubject(createSubject: CreateSubjectInput!): Subject!
@@ -138,11 +149,28 @@ type Mutation {
   deleteCourse(id: Int!): Course!
 }
 
+input CreateClassroom {
+  classroom_name: String!
+  description: String!
+  studentsIds: [StudentsIds!]
+  teachersIds: [TeachersIds!]
+}
+
+input StudentsIds {
+  student_id: Float!
+}
+
+input TeachersIds {
+  teacher_id: Float!
+  subject_id: Float!
+}
+
 input UpdateClassroom {
   classroom_name: String
-  subjects: [String!] = []
-  students: [String!] = []
-  teachers: [String!] = []
+  description: String
+  studentsIds: [StudentsIds!]
+  teachersIds: [TeachersIds!]
+  classroom_id: Float!
 }
 
 input CreateTeacher {
@@ -151,6 +179,12 @@ input CreateTeacher {
   user_name: String!
   email: String!
   password: String!
+  classrooms: [ClassroomInput!]
+}
+
+input ClassroomInput {
+  classroom_id: Float!
+  subject_id: Float!
 }
 
 input UpdateTeacher {
@@ -159,6 +193,8 @@ input UpdateTeacher {
   user_name: String
   email: String
   password: String
+  classrooms: [ClassroomInput!]
+  teacher_id: Float!
 }
 
 input CreateStudent {
@@ -177,6 +213,7 @@ input UpdateStudent {
   email: String
   password: String
   classroom_id: Float
+  student_id: Float!
 }
 
 input SignupInput {
@@ -194,6 +231,12 @@ input LoginInput {
 
 input CreateTopic {
   content: String!
+}
+
+input CourseId {
+  classroom_id: Float
+  teacher_id: Float
+  subject_id: Float
 }
 
 input UpdateTopic {

@@ -5,16 +5,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { CreateClassroom } from '../dto/create-classroom.input';
 
 @Injectable()
 export class ClassroomService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getClassrooms() {
+  async getClassrooms(search?: string) {
     const query = await this.prismaService.classroom.findMany({
+      where: { classroom_name: search },
       orderBy: {
         createdAt: 'desc',
       },
+
       include: {
         student: {
           select: {
@@ -33,41 +36,25 @@ export class ClassroomService {
             },
           },
         },
-        teacherClassroom: {
+
+        course: {
           select: {
-            teacher: {
-              select: { user: true, teacher_id: true, user_id: true },
-            },
+            subject: { select: { name: true, id: true } },
+            teacher: { select: { user: true, teacher_id: true } },
           },
         },
-        course: true,
       },
     });
 
-    const data = query.map((el) => {
-      const { teacherClassroom, ...rest } = el;
-
-      const teacher = teacherClassroom.map((el) => el.teacher);
-
-      return { ...rest, teacher };
-    });
-
-    return data;
+    return query;
   }
 
   async findOne(classroom_id: number) {
     const existingClassroom = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
       include: {
-        student: true,
+        student: { select: { user: true, student_id: true } },
         course: true,
-        teacherClassroom: {
-          select: {
-            teacher: {
-              select: { user: true, teacher_id: true, user_id: true },
-            },
-          },
-        },
       },
     });
 
@@ -82,85 +69,67 @@ export class ClassroomService {
     const query = await this.prismaService.classroom.findUnique({
       where: { classroom_id },
       include: {
-        student: true,
-        teacherClassroom: { select: { teacher: true } },
-        course: true,
+        student: { select: { user: true, student_id: true } },
+        course: {
+          select: {
+            id: true,
+            createdAt: true,
+            subject: true,
+            teacher: {
+              select: {
+                teacher_id: true,
+                user: true,
+
+                updatedAt: true,
+              },
+            },
+          },
+        },
       },
     });
-    const { teacherClassroom, ...rest } = query;
 
-    const teacher = teacherClassroom?.map((el) => el.teacher);
-    return { ...rest, teacher };
+    return query;
   }
 
-  async creatClassroom(
-    classroom_name: string,
-    teachersId: number[],
-    studentsId: number[],
-  ) {
+  async creatClassroom(classroom: CreateClassroom) {
     const classroomExist = await this.prismaService.classroom.findUnique({
-      where: { classroom_name },
+      where: { classroom_name: classroom?.classroom_name },
     });
     if (classroomExist)
       throw new ConflictException(
         'Classroom with the given name already exists',
       );
 
-    const listTeachersId = teachersId.map((el) => ({ teacher_id: el }));
-    const listStudentsId = studentsId.map((el) => ({ student_id: el }));
-
-    const data = await this.prismaService.classroom.create({
+    const query = await this.prismaService.classroom.create({
       data: {
-        classroom_name,
-        teacherClassroom: { createMany: { data: listTeachersId } },
-        student: { connect: listStudentsId },
-        course: { connect: [] },
+        classroom_name: classroom?.classroom_name,
+        description: classroom?.description,
+        student: { connect: classroom?.studentsIds || [] },
+        course: { createMany: { data: classroom?.teachersIds || [] } },
       },
       include: {
         student: true,
-        teacherClassroom: { select: { teacher: true } },
         course: true,
       },
     });
-    const { teacherClassroom, ...res } = data;
-    const teacher = teacherClassroom.map((el) => el.teacher);
-    return { ...res, teacher };
+    return query;
   }
 
-  async editClassromm(classroom: UpdateClassroom, classroom_id: number) {
-    await this.findOne(classroom_id);
-
-    const listTeachersId = classroom?.teachers?.map((el) => ({
-      teacher_id: +el,
-    }));
-    const listStudentsId = classroom?.students?.map((el) => ({
-      student_id: +el,
-    }));
+  async editClassromm(classroom: UpdateClassroom) {
+    await this.findOne(classroom?.classroom_id);
 
     return this.prismaService.classroom.update({
-      where: { classroom_id },
+      where: { classroom_id: classroom?.classroom_id },
       data: {
         classroom_name: classroom?.classroom_name,
-        student: { set: listStudentsId },
-        teacherClassroom: {
-          createMany: { data: listTeachersId },
-        },
+        description: classroom?.description,
+        student: { set: classroom?.studentsIds },
       },
       select: {
         student: { include: { user: true } },
         classroom_name: true,
         classroom_id: true,
-        teacherClassroom: {
-          select: {
-            teacher: {
-              select: {
-                course: true,
-                user: true,
-                teacher_id: true,
-              },
-            },
-          },
-        },
+        course: true,
       },
     });
   }
