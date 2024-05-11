@@ -12,6 +12,7 @@ import { SignupInput } from '../dto/signup.input';
 import { Token } from '../models/token.model';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { UpdateUser } from '../dto/update.input';
 
 export interface SecurityConfig {
   expiresIn: string;
@@ -58,8 +59,34 @@ export class AuthService {
     }
   }
 
+  async editUser(payload: UpdateUser) {
+    const { password, user_id, ...rest } = payload;
+    let hashedPassword: string;
+    if (password) {
+      hashedPassword = await this.passwordService.hashPassword(password);
+    }
+    try {
+      const user = await this.prisma.user.update({
+        where: { user_id },
+        data: {
+          ...rest,
+          ...(hashedPassword && { password_hash: hashedPassword }),
+        },
+      });
+
+      return user;
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new ConflictException(`Email ${payload.email} already used.`);
+      }
+      throw new Error(e);
+    }
+  }
+
   async login(email: string, password: string): Promise<Token> {
-    
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user) {

@@ -49,6 +49,7 @@ type Teacher {
 }
 
 type Topic {
+  topic_id: Float!
   content: String!
 }
 
@@ -93,10 +94,11 @@ type Auth {
 }
 
 type CurrentUser {
-  user_id: Int!
+  user_id: Float!
   user_name: String!
   first_name: String!
   last_name: String!
+  email: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   role: RoleCodeEnum!
@@ -136,6 +138,7 @@ type Mutation {
   EditStudent(editStudent: UpdateStudent!): Student!
   deleteStudent(studentId: Float!): Student!
   signup(data: SignupInput!): Auth!
+  editUser(data: UpdateUser!): CurrentUser!
   login(data: LoginInput!): Auth!
   refreshToken(token: JWT!): Token!
   CreateTopic(createTopic: CreateTopic!, courseId: CourseId): Topic!
@@ -222,6 +225,14 @@ input SignupInput {
   first_name: String!
   last_name: String!
   role: RoleCodeEnum!
+}
+
+input UpdateUser {
+  user_id: Float!
+  email: String!
+  user_name: String!
+  first_name: String!
+  last_name: String!
 }
 
 input LoginInput {

@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtDto): Promise<user & { role: RoleCodeEnum }> {
     const user = await this.authService.validateUser(payload?.user_id);
     const { roles_on_users, ...rest } = user;
-    const role = user?.roles_on_users?.[0]?.role?.role_code as RoleCodeEnum;
+    const role = user?.roles_on_users?.[0]?.role?.role_code as RoleCodeEnum;      
     if (!user) {
       throw new UnauthorizedException();
     }

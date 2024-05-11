@@ -8,16 +8,21 @@ export class TopicService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getTopics() {
-    return this.prismaService.topic.findMany({});
+    return this.prismaService.topic.findMany({
+      select: { content: true, topic_id: true },
+    });
   }
 
   async getTopicsByAuthor(user_id: number) {
     return this.prismaService.topic.findMany({
+      orderBy: { createdAt: 'asc' },
       where: { user_id: { equals: user_id } },
+      
     });
   }
   async getTopicsByCourseId(course_id: number) {
     return this.prismaService.topic.findMany({
+      orderBy: { createdAt: 'asc' },
       where: { course_id },
     });
   }
@@ -25,16 +30,21 @@ export class TopicService {
   async createTopic(
     topic: CreateTopic,
     user_id: number,
-    {
-      classroom_id,
-      teacher_id,
-      subject_id,
-    }: { classroom_id?: number; teacher_id?: number; subject_id?: number },
+    course?: {
+      classroom_id?: number;
+      teacher_id?: number;
+      subject_id?: number;
+    },
   ) {
     const courseId =
-      classroom_id && teacher_id && subject_id
-        ? { classroom_id, teacher_id, subject_id }
+      course?.classroom_id && course?.teacher_id && course?.subject_id
+        ? {
+            classroom_id: course?.classroom_id,
+            teacher_id: course?.teacher_id,
+            subject_id: course?.subject_id,
+          }
         : null;
+
     const connect = {
       subject_id_teacher_id_classroom_id: courseId,
     };

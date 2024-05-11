@@ -3,7 +3,7 @@ import { RoleCodeEnum } from '@prisma/client';
 
 @ObjectType()
 export class CurrentUser {
-  @Field(() => Int)
+  @Field(() => Number)
   user_id: number;
 
   @Field(() => String)
@@ -14,6 +14,9 @@ export class CurrentUser {
 
   @Field(() => String)
   last_name: string;
+
+  @Field(() => String)
+  email: string;
 
   @Field(() => Date)
   createdAt: Date;

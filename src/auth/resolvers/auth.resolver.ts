@@ -9,6 +9,7 @@ import { GqlAuthGuard, UserEntity } from '../gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../dto/user.input';
 import { Response, Request } from 'express';
+import { UpdateUser } from '../dto/update.input';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -28,6 +29,10 @@ export class AuthResolver {
       accessToken,
       refreshToken,
     };
+  }
+  @Mutation(() => CurrentUser)
+  async editUser(@Args('data') data: UpdateUser) {
+    return this.auth.editUser(data);
   }
 
   @Mutation(() => Auth)
