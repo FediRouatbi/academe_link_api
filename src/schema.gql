@@ -49,6 +49,7 @@ type Teacher {
 }
 
 type Topic {
+  user_id: Float!
   topic_id: Float!
   content: String!
 }

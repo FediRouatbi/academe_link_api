@@ -9,21 +9,21 @@ export class TopicService {
 
   async getTopics() {
     return this.prismaService.topic.findMany({
-      select: { content: true, topic_id: true },
+      select: { content: true, topic_id: true, user_id: true },
     });
   }
 
   async getTopicsByAuthor(user_id: number) {
     return this.prismaService.topic.findMany({
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
       where: { user_id: { equals: user_id } },
-      
     });
   }
   async getTopicsByCourseId(course_id: number) {
     return this.prismaService.topic.findMany({
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
       where: { course_id },
+      select: { topic_id: true, content: true, user_id: true },
     });
   }
 
