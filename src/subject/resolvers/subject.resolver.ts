@@ -14,8 +14,8 @@ export class SubjectResolver {
   }
 
   @Query(() => [Subject], { name: 'getSubjects' })
-  async getSubjects() {
-    return this.subjectService.findAll();
+  async getSubjects(@Args('search', { nullable: true }) search?: string) {
+    return this.subjectService.findAll(search);
   }
 
   @Query(() => Subject, { name: 'getSubject' })

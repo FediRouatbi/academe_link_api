@@ -19,8 +19,11 @@ export class CourseResolver {
   }
   @UseGuards(GqlAuthGuard)
   @Query(() => [Course], { name: 'getCourses' })
-  async findAll(@UserEntity() user: CurrentUser) {
-    return this.courseService.findAll(user);
+  async findAll(
+    @UserEntity() user: CurrentUser,
+    @Args('search', { nullable: true }) search?: string,
+  ) {
+    return this.courseService.findAll(user, search);
   }
 
   @Query(() => Course, { name: 'getCourse' })

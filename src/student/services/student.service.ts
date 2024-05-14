@@ -12,26 +12,31 @@ export class StudentService {
     private readonly bcryptService: BcryptService,
   ) {}
 
-  async getStudents(hasClassroom: boolean) {
+  async getStudents(hasClassroom: boolean, search?: string) {
     const where: Prisma.studentWhereInput = {
       ...(hasClassroom === false && { classroom: { is: null } }),
     };
+    const searchParams = {
+      user: {
+        OR: [
+          {
+            email: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          },
+          {
+            user_name: { contains: search, mode: Prisma.QueryMode.insensitive },
+          },
+        ],
+      },
+    };
 
     return this.prismaService.student.findMany({
-      where,
+      where: { ...where, ...searchParams },
       include: {
         classroom: true,
-        user: {
-          select: {
-            user_name: true,
-            last_name: true,
-            first_name: true,
-            createdAt: true,
-            updatedAt: true,
-            user_id: true,
-            email: true,
-          },
-        },
+        user: true,
       },
     });
   }
@@ -43,17 +48,7 @@ export class StudentService {
     return this.prismaService.student.create({
       include: {
         classroom: true,
-        user: {
-          select: {
-            user_name: true,
-            last_name: true,
-            first_name: true,
-            createdAt: true,
-            updatedAt: true,
-            user_id: true,
-            email: true,
-          },
-        },
+        user: true,
       },
       data: {
         classroom: student.classroom_id && {
@@ -124,7 +119,6 @@ export class StudentService {
     return existingClassroom;
   }
 
-  
   async deleteStudent(student_id: number) {
     const query = await this.prismaService.user.findFirst({
       where: { student: { student_id } },

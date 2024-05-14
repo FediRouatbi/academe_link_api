@@ -16,20 +16,23 @@ export class TeacherService {
     private readonly prismaService: PrismaService,
     private readonly bcryptService: BcryptService,
   ) {}
-  async getTeachers() {
+  async getTeachers(search?: string) {
     return this.prismaService.teacher.findMany({
-      include: {
+      where: {
         user: {
-          select: {
-            user_name: true,
-            last_name: true,
-            first_name: true,
-            createdAt: true,
-            updatedAt: true,
-            user_id: true,
-            email: true,
-          },
+          OR: [
+            {
+              email: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            { user_name: { contains: search, mode: 'insensitive' } },
+          ],
         },
+      },
+      include: {
+        user: true,
         course: true,
       },
     });

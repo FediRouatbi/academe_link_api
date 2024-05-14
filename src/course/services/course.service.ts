@@ -3,6 +3,7 @@ import { UpdateCourseInput } from '../dto/update-course.input';
 import { CreateCourseInput } from '../dto/create-course.input';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { CurrentUser } from 'src/auth/dto/user.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CourseService {
@@ -19,7 +20,7 @@ export class CourseService {
     });
   }
 
-  async findAll(user: CurrentUser) {
+  async findAll(user: CurrentUser, search?: string) {
     const query = {
       id: true,
       createdAt: true,
@@ -34,6 +35,27 @@ export class CourseService {
       teacher: { select: { user: true, teacher_id: true } },
       subject: true,
     };
+
+    const searchParams = search
+      ? {
+          OR: [
+            {
+              subject: {
+                name: { contains: search, mode: Prisma.QueryMode.insensitive },
+              },
+            },
+            {
+              classroom: {
+                classroom_name: {
+                  contains: search,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+            },
+          ],
+        }
+      : {};
+
     if (user?.role === 'STUDENT') {
       const { classroom_id } = await this.prismaService?.classroom.findFirst({
         where: { student: { some: { user_id: user?.user_id } } },
@@ -41,20 +63,20 @@ export class CourseService {
       });
 
       return this.prismaService.course.findMany({
-        where: { classroom_id },
+        where: { classroom_id, AND: searchParams },
         select: query,
       });
     }
 
     if (user?.role === 'TEACHER') {
       return this.prismaService.course.findMany({
-        where: { teacher: { user_id: user?.user_id } },
+        where: { teacher: { user_id: user?.user_id }, AND: searchParams },
         select: query,
       });
     }
 
     return this.prismaService.course.findMany({
-      where: {},
+      where: { ...searchParams },
       select: query,
     });
   }

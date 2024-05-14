@@ -14,6 +14,8 @@ model user {
   password_hash  String?
   first_name     String
   last_name      String
+  image_url      String?
+  description    String?
   roles_on_users roles_on_users[]
   createdAt      DateTime         @default(now())
   puat           DateTime         @default(now())

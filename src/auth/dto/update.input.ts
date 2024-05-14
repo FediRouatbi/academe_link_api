@@ -13,8 +13,17 @@ export class UpdateUser {
   @Field()
   user_name: string;
 
+  @Field(() => String, { nullable: true })
   @IsOptional()
   password?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  image_url?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  description?: string;
 
   @Field()
   first_name: string;

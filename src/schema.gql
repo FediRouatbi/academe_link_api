@@ -4,6 +4,8 @@
 
 type User {
   user_id: Int!
+  image_url: String
+  description: String
   user_name: String!
   email: String!
   first_name: String!
@@ -96,6 +98,8 @@ type Auth {
 
 type CurrentUser {
   user_id: Float!
+  image_url: String
+  description: String
   user_name: String!
   first_name: String!
   last_name: String!
@@ -112,19 +116,19 @@ enum RoleCodeEnum {
 }
 
 type Query {
-  getClassrooms: [Classroom!]!
+  getClassrooms(search: String): [Classroom!]!
   getClassroom(id: Int!): Classroom!
-  GetTeachers: [Teacher!]!
+  GetTeachers(search: String): [Teacher!]!
   GetTeacher(id: Int!): Teacher!
-  GetStudents(hasClassroom: Boolean): [Student!]!
+  GetStudents(hasClassroom: Boolean, search: String): [Student!]!
   getStudent(id: Int!): Student!
   getCurrentUser: CurrentUser!
   GetTopics: [Topic!]!
   getTopicsByAuthor(authorID: Int!): [Topic!]!
   getTopicsByCourseId(courseID: Int!): [Topic!]!
-  getSubjects: [Subject!]!
+  getSubjects(search: String): [Subject!]!
   getSubject(id: Int!): Subject!
-  getCourses: [Course!]!
+  getCourses(search: String): [Course!]!
   getCourse(id: Int!): Course!
 }
 
@@ -232,6 +236,9 @@ input UpdateUser {
   user_id: Float!
   email: String!
   user_name: String!
+  password: String
+  image_url: String
+  description: String
   first_name: String!
   last_name: String!
 }

@@ -12,8 +12,9 @@ export class UserResolver {
   async GetStudents(
     @Args('hasClassroom', { type: () => Boolean, nullable: true })
     hasClassroom?: boolean,
+    @Args('search', { nullable: true }) search?: string,
   ): Promise<Student[]> {
-    return this.studentService.getStudents(hasClassroom);
+    return this.studentService.getStudents(hasClassroom, search);
   }
 
   @Query(() => Student)

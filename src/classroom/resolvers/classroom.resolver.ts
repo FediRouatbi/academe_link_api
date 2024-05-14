@@ -11,8 +11,8 @@ export class ClassroomResolver {
   constructor(private readonly classroomService: ClassroomService) {}
   @UseGuards(GqlAuthGuard)
   @Query(() => [Classroom])
-  async getClassrooms() {
-    return this.classroomService.getClassrooms();
+  async getClassrooms(@Args('search', { nullable: true }) search?: string) {
+    return this.classroomService.getClassrooms(search);
   }
 
   @Query(() => Classroom)

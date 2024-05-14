@@ -13,7 +13,12 @@ export class ClassroomService {
 
   async getClassrooms(search?: string) {
     const query = await this.prismaService.classroom.findMany({
-      where: { classroom_name: search },
+      where: {
+        OR: [
+          { description: { contains: search, mode: 'insensitive' } },
+          { classroom_name: { contains: search, mode: 'insensitive' } },
+        ],
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -24,16 +29,7 @@ export class ClassroomService {
             student_id: true,
             user_id: true,
             classroom_id: true,
-            user: {
-              select: {
-                user_name: true,
-                last_name: true,
-                first_name: true,
-                createdAt: true,
-                updatedAt: true,
-                user_id: true,
-              },
-            },
+            user: true,
           },
         },
 

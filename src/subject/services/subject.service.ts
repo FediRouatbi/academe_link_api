@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { UpdateSubjectInput } from '../dto/update-subject.input';
 import { CreateSubjectInput } from '../dto/create-subject.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SubjectService {
@@ -11,8 +12,14 @@ export class SubjectService {
     return this.prismaService.subject.create({ data: { name } });
   }
 
-  findAll() {
+  findAll(search?: string) {
+    const searchBy = search
+      ? { name: { contains: search, mode: Prisma.QueryMode.insensitive } }
+      : {};
     return this.prismaService.subject.findMany({
+      where: {
+        ...searchBy,
+      },
       orderBy: { createdAt: 'desc' },
       select: {
         course: {

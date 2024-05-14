@@ -9,8 +9,10 @@ export class TeacherResolver {
   constructor(private readonly teacherService: TeacherService) {}
 
   @Query(() => [Teacher])
-  async GetTeachers(): Promise<Teacher[]> {
-    return this.teacherService.getTeachers();
+  async GetTeachers(
+    @Args('search', { nullable: true }) search?: string,
+  ): Promise<Teacher[]> {
+    return this.teacherService.getTeachers(search);
   }
 
   @Query(() => Teacher)
