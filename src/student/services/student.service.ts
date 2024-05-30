@@ -81,13 +81,22 @@ export class StudentService {
 
   async editStudent(student: UpdateStudent) {
     await this.findOne(student?.student_id);
+    const classroomId = student?.classroom_id
+      ? {
+          classroom: {
+            connect: { classroom_id: student?.classroom_id },
+          },
+        }
+      : {
+          classroom: {
+            delete: true,
+          },
+        };
 
     return this.prismaService.student.update({
       where: { student_id: student?.student_id },
       data: {
-        classroom: {
-          connect: { classroom_id: student?.classroom_id },
-        },
+        ...classroomId,
         user: {
           update: {
             first_name: student?.first_name,

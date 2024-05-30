@@ -91,6 +91,10 @@ export class TeacherService {
       where: { teacher_id: teacher?.teacher_id },
 
       data: {
+        course: {
+          deleteMany: {},
+          createMany: { data: teacher?.classrooms || [] },
+        },
         user: {
           update: {
             first_name: teacher?.first_name,
