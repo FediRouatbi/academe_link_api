@@ -9,7 +9,7 @@ export class Course {
   @Field(() => Number)
   id: number;
 
-  @Field(() => Classroom)
+  @Field(() => Classroom, { nullable: true })
   classroom: Classroom;
 
   @Field(() => Teacher)

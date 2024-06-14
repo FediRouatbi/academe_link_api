@@ -58,7 +58,7 @@ type Topic {
 
 type Course {
   id: Float!
-  classroom: Classroom!
+  classroom: Classroom
   teacher: Teacher!
   subject: Subject!
   createdAt: DateTime
