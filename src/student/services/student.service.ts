@@ -89,7 +89,7 @@ export class StudentService {
         }
       : {
           classroom: {
-            delete: true,
+            disconnect: true,
           },
         };
 
@@ -97,6 +97,7 @@ export class StudentService {
       where: { student_id: student?.student_id },
       data: {
         ...classroomId,
+
         user: {
           update: {
             first_name: student?.first_name,
